@@ -39,13 +39,45 @@ inline constexpr T limit(T input, T input_min, T input_max) {
 }
 
 template <typename T>
-constexpr T sin(T input) {}
+constexpr T sin(T input) {
+    int Iterator = 1, Negation = 1;
+    float Res;
+    float Index = input;
+    float Fact = static_cast<float>(1.0);
+    float TaylorExpansion = input;
+    do {
+        Fact = mul(Fact, mul(add(Iterator, 1), add(Iterator, 2)));
+        Index = mul(Index, mul(input, input));
+        Negation = -Negation;
+        Res = div(mul(Index, Negation), Fact);
+        TaylorExpansion = add(TaylorExpansion, Res);
+        Iterator = add(Iterator, 2);
+    } while (abs(Res) > 1e-7);
+    return TaylorExpansion;
+}
 
 template <typename T>
-constexpr T cos(T input) {}
+constexpr T cos(T input) {
+    int Iterator = 0, Negation = 1;
+    float Res;
+    float Index = static_cast<float>(1.0);
+    float Fact = static_cast<float>(1.0);
+    float TaylorExpansion = static_cast<float>(1.0);
+    do {
+        Fact = mul(Fact, mul(add(Iterator, 1), add(Iterator, 2)));
+        Index = mul(Index, mul(input, input));
+        Negation = -Negation;
+        Res = div(mul(Index, Negation), Fact);
+        TaylorExpansion = add(TaylorExpansion, Res);
+        Iterator = add(Iterator, 2);
+    } while (abs(Res) > 1e-7);
+    return TaylorExpansion;
+}
 
 template <typename T>
-constexpr T tan(T input) {}
+constexpr T tan(T input) {
+    return div(sin(input), cos(input));
+}
 
 template <typename T>
 constexpr T arcsin(T input) {}
