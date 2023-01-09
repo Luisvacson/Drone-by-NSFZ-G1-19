@@ -1,17 +1,17 @@
 {
-    "files.defaultLanguage": "c++", 
-    "editor.formatOnType": false, 
+    "files.defaultLanguage": "c++",
+    "editor.formatOnType": false,
     "editor.suggest.snippetsPreventQuickSuggestions": false,
-    "editor.acceptSuggestionOnEnter": "off", 
-    "code-runner.runInTerminal": true, 
+    "editor.acceptSuggestionOnEnter": "off",
+    "code-runner.runInTerminal": true,
     "code-runner.executorMap": {
         "c": "cd $dir && gcc '$fileName' -o '$fileNameWithoutExt.exe' -Wall -g -O2 -static-libgcc -std=c11 -fexec-charset=GBK && &'$dir$fileNameWithoutExt'",
         "cpp": "cd $dir && g++ '$fileName' -o '$fileNameWithoutExt.exe' -Wall -g -O2 -static-libgcc -std=c++17 -fexec-charset=GBK && &'$dir$fileNameWithoutExt'"
-    }, 
-    "code-runner.saveFileBeforeRun": true, 
-    "code-runner.preserveFocus": true,  
+    },
+    "code-runner.saveFileBeforeRun": true,
+    "code-runner.preserveFocus": true,
     "code-runner.clearPreviousOutput": false,
-    "code-runner.ignoreSelection": true, 
-
-    "C_Cpp.clang_format_sortIncludes": true, 
+    "code-runner.ignoreSelection": true,
+    "C_Cpp.clang_format_sortIncludes": true,
+    "C_Cpp.errorSquiggles": "disabled",
 }
