@@ -4,7 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "${default}",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/UAV Code/R_Caculation/R_PID"
             ],
             "defines": [
                 "_DEBUG",

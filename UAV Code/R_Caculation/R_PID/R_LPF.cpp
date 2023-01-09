@@ -1,0 +1,16 @@
+#include "R_LPF.h"
+#include "R_Math.h"
+
+namespace R_LPF
+{
+    //inline constexpr float get_lpf_alpha(float delta_time,float frequency)
+    //{
+    //    float rc=div(1.0f,mul(stastic_cast<float>(DOUBLE_PI),frequency));
+    //    return div(delta_time,add(delta_time,rc));
+    //}
+    //inline constexpr float calculate_lpf(float input,float last,R_LPF_info info)
+    //{
+    //    float alpha=get_lpf_alpha(info.delta_time,info.frequency);
+    //    return add();
+    //}
+};
