@@ -3,16 +3,17 @@
 #ifndef R_MATH_H
 #define R_MATH_H
 
+#ifndef R_USE_FPU
+    template<typename T> inline T add(T input1, T input2) {return input1 + input2;}
+    template<typename T> inline T sub(T input1, T input2) {return input1 - input2;}
+    template<typename T> inline T mul(T input1, T input2) {return input1 * input2;}
+    template<typename T> inline T div(T input1, T input2) {return input1 / input2;}
+#endif
+
 template<typename T>class R_Number
 {
     private:
         T content;
-        #ifndef R_USE_FPU
-        inline T add(T input1, T input2) {return input1 + input2;}
-        inline T sub(T input1, T input2) {return input1 - input2;}
-        inline T mul(T input1, T input2) {return input1 * input2;}
-        inline T div(T input1, T input2) {return input1 / input2;}
-        #endif
         friend inline R_Number<T> operator+(T input1,R_Number<T> input2){return R_Number(add(input1,input2.content));}
         friend inline R_Number<T> operator-(T input1,R_Number<T> input2){return R_Number(sub(input1,input2.content));}
         friend inline R_Number<T> operator*(T input1,R_Number<T> input2){return R_Number(mul(input1,input2.content));}
