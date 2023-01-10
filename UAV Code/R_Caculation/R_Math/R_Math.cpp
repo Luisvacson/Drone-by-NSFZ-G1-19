@@ -206,4 +206,4 @@ T sat(T input1, T input2) {}
 
 template <typename T>
 float sign(T input2) {}
-};  // namespace R_MAT
+};  // namespace R_MATH
