@@ -3,13 +3,13 @@
 
 namespace R_LPF
 {
-    inline R_LPF_Calculate::R_LPF_Calculate(float delta_time,float frequency)
+    inline void R_LPF_Calculate::set(R_Float delta_time,R_Float frequency)
     {
-        float rc=div(1.0f,mul((float)DOUBLE_PI,frequency));
-        alpha=div(delta_time,add(delta_time,rc));
+        R_Float rc=1.0f/((float)DOUBLE_PI*frequency);
+        alpha=delta_time/(delta_time+rc);
     }
-    inline void R_LPF_Calculate::Calculate(float sample)
+    inline R_Float R_LPF_Calculate::Calculate(R_Float sample,R_Float last_result)
     {
-        result=add(mul(alpha,sample),mul(sub((float)1,alpha),result));
+        return (alpha*sample)+(((float)1-alpha)*last_result);
     }
 };

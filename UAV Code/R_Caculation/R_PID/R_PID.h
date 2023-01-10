@@ -4,31 +4,39 @@
 #define R_PID_H
 
 #include "R_LPF.h"
+#include "R_Math.h"
 
 namespace R_PID
 {
     typedef struct _R_PID_Parameter
     {
-        float kp;
-        float ki;
-        float kd;
+        R_Float kp;
+        R_Float ki;
+        R_Float kd;
     }R_PID_Parameter;
 
     class R_PID_Calculate
     {
         public:
             R_PID_Parameter parameter;
-            float kff;
-            float imax;
-            float E_frequency;
-            float D_frequency;
-            R_LPF::R_LPF_Calculate low_pass_filter;
+            R_Float kff;
+            R_Float imax;
+            R_Float E_frequency;
+            R_Float D_frequency;
+            R_LPF::R_LPF_Calculate E_filter;
+            R_LPF::R_LPF_Calculate D_filter;
 
-            float target;
-            float delta_time;
-            float error;
-            float derivative;
-            float integrator;
+            bool reset_filter_flag=false;
+
+            R_Float target;
+            R_Float delta_time;
+            R_Float error;
+            R_Float derivative;
+            R_Float integrator;
+
+            inline R_PID_Calculate(R_Float initial_kp, R_Float initial_ki, R_Float initial_kd, R_Float initial_kff, R_Float initial_imax, R_Float initial_E_frequency, R_Float initial_D_frequency, R_Float dt);
+            inline void reset_filter(){reset_filter_flag=true;}
+            void update(R_Float _target,R_Float measurement);
     };
 };
 

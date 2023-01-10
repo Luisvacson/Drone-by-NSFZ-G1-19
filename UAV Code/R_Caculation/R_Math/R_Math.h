@@ -79,14 +79,7 @@ template<typename T>class R_Number
         inline operator float(){return (float)content;}
 };
 
-typedef R_Number<float> R_Float;
-
-#define FLOAT_EPSILON (0.0001)
-#define PI (3.1415926)
-#define HALF_PI (1.5707963)
-#define DOUBLE_PI (6.2831853)
-#define DEGREE_TO_RADIAN (0.0174532)
-#define RADIAN_TO_DEGREE (57.2957795)
+typedef class R_Number<float> R_Float;
 
 namespace R_MATH {
 template <typename T>

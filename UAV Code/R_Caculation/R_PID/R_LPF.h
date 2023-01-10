@@ -3,15 +3,16 @@
 #ifndef R_LPF_H
 #define R_LPF_H
 
+#include "R_Math.h"
 namespace R_LPF
 {
     class R_LPF_Calculate
     {
         public:
-            float alpha;
-            float result;
-            inline R_LPF_Calculate(float delta_time,float frequency);
-            inline void Calculate(float sample);
+            R_Float alpha;
+            inline R_LPF_Calculate(){}
+            inline void set(R_Float delta_time,R_Float frequency);
+            inline R_Float Calculate(R_Float sample,R_Float last_result);
     };
 };
 
