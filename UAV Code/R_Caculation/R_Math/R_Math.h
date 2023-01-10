@@ -3,6 +3,24 @@
 #ifndef R_MATH_H
 #define R_MATH_H
 
+class R_Float
+{
+    private:
+        float content;
+    public:
+        inline R_Float(float input);
+        inline R_Float operator+(R_Float input);
+        inline R_Float operator-(R_Float input);
+        inline R_Float operator*(R_Float input);
+        inline R_Float operator/(R_Float input);
+        inline R_Float operator+=(R_Float input);
+        inline R_Float operator-=(R_Float input);
+        inline R_Float operator*=(R_Float input);
+        inline R_Float operator/=(R_Float input);
+        inline bool operator==(R_Float input);
+        inline void operator=(R_Float input);
+};
+
 template <typename T>
 inline constexpr T add(T input1, T input2) {
     return input1 + input2;
