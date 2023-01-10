@@ -39,31 +39,31 @@ template<typename T>class R_Number
 };
 
 template <typename T>
-inline constexpr T add(T input1, T input2) {
+inline T add(T input1, T input2) {
     return input1 + input2;
 };
 template <typename T>
-inline constexpr T sub(T input1, T input2) {
+inline T sub(T input1, T input2) {
     return input1 - input2;
 };
 template <typename T>
-inline constexpr T mul(T input1, T input2) {
+inline T mul(T input1, T input2) {
     return input1 * input2;
 };
 template <typename T>
-inline constexpr T div(T input1, T input2) {
+inline T div(T input1, T input2) {
     return input1 / input2;
 };
 
 #ifdef R_USE_FPU
 template <>
-inline constexpr float add<float>(float input1, float input2){};
+inline float add<float>(float input1, float input2){};
 template <>
-inline constexpr float sub<float>(float input1, float input2){};
+inline float sub<float>(float input1, float input2){};
 template <>
-inline constexpr float mul<float>(float input1, float input2){};
+inline float mul<float>(float input1, float input2){};
 template <>
-inline constexpr float div<float>(float input1, float input2){};
+inline float div<float>(float input1, float input2){};
 #endif
 
 #define FLOAT_EPSILON (0.0001)
@@ -75,61 +75,61 @@ inline constexpr float div<float>(float input1, float input2){};
 
 namespace R_MATH {
 template <typename T>
-inline constexpr bool is_zero(T input);
+inline bool is_zero(T input);
 template <typename T>
-inline constexpr bool is_in_range(T input, T input_min, T input_max);
+inline bool is_in_range(T input, T input_min, T input_max);
 template <typename T>
-inline constexpr float degree_to_radian(T input);
+inline float degree_to_radian(T input);
 template <typename T>
-inline constexpr float radian_to_degree(T input);
+inline float radian_to_degree(T input);
 template <typename T>
-inline constexpr T abs(T input);
+inline T abs(T input);
 template <typename T>
-inline constexpr T limit(T input, T input_min, T input_max);
+inline T limit(T input, T input_min, T input_max);
 template <typename T>
-constexpr T sin(T input);
+T sin(T input);
 template <typename T>
-constexpr T cos(T input);
+T cos(T input);
 template <typename T>
-constexpr T tan(T input);
+T tan(T input);
 template <typename T>
-constexpr T arcsin(T input);
+T arcsin(T input);
 template <typename T>
-constexpr T arccos(T input);
+T arccos(T input);
 template <typename T>
-constexpr T arctan(T input);
+T arctan(T input);
 template <typename T>
-constexpr T exp(T input);
+T exp(T input);
 template <typename T>
-constexpr T sqart(T input);
+T sqart(T input);
 template <typename T>
-inline constexpr T max(T input1, T input2);
+inline T max(T input1, T input2);
 template <typename T>
-inline constexpr T max(T input1, T input2, T input3);
+inline T max(T input1, T input2, T input3);
 template <typename T>
-inline constexpr T min(T input1, T input2);
+inline T min(T input1, T input2);
 template <typename T>
-inline constexpr T min(T input1, T input2, T input3);
+inline T min(T input1, T input2, T input3);
 template <typename T1, typename T2>
-constexpr T1 power(T1 input, T2 num);
+T1 power(T1 input, T2 num);
 template <typename T>
-constexpr T sum(T* input, int num);
+T sum(T* input, int num);
 template <typename T>
-constexpr T sqasum(T* input, int num);
+T sqasum(T* input, int num);
 template <typename T>
-constexpr T mean(T* input, int num);
+T mean(T* input, int num);
 template <typename T>
-constexpr T wmean(T input1, T input2, T weight1);
+T wmean(T input1, T input2, T weight1);
 template <typename T>
-constexpr T sqamean(T* input, int num);
+T sqamean(T* input, int num);
 template <typename T1, typename T2>
 void swap(T1* input1, T2* input2);
 template <typename T>
-constexpr T arctan2(T input1, T input2);
+T arctan2(T input1, T input2);
 template <typename T>
-constexpr T sat(T input1, T input2);
+T sat(T input1, T input2);
 template <typename T>
-constexpr float sign(T input2);
+float sign(T input2);
 };  // namespace R_MATH
 
 #endif
