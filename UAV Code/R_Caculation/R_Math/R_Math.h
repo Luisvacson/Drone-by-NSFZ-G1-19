@@ -7,34 +7,40 @@ template<typename T>class R_Number
 {
     private:
         T content;
+        #ifndef R_USE_FPU
+        inline T add(T input1, T input2) {return input1 + input2;};
+        inline T sub(T input1, T input2) {return input1 - input2;};
+        inline T mul(T input1, T input2) {return input1 * input2;};
+        inline T div(T input1, T input2) {return input1 / input2;};
+        #endif
     public:
-        inline R_Number(T input);
-        inline R_Number<T> operator+(R_Number<T> input);
-        inline R_Number<T> operator-(R_Number<T> input);
-        inline R_Number<T> operator*(R_Number<T> input);
-        inline R_Number<T> operator/(R_Number<T> input);
-        friend inline R_Number<T> operator+(T input1,R_Number<T> input2);
-        friend inline R_Number<T> operator-(T input1,R_Number<T> input2);
-        friend inline R_Number<T> operator*(T input1,R_Number<T> input2);
-        friend inline R_Number<T> operator/(T input1,R_Number<T> input2);
-        inline R_Number<T> operator+=(R_Number<T> input);
-        inline R_Number<T> operator-=(R_Number<T> input);
-        inline R_Number<T> operator*=(R_Number<T> input);
-        inline R_Number<T> operator/=(R_Number<T> input);
-        inline bool operator>(R_Number<T> input);
-        inline bool operator<(R_Number<T> input);
-        inline bool operator>=(R_Number<T> input);
-        inline bool operator<=(R_Number<T> input);
-        inline bool operator!=(R_Number<T> input);
-        inline bool operator==(R_Number<T> input);
-        friend inline bool operator>(T input1,R_Number<T> input2);
-        friend inline bool operator<(T input1,R_Number<T> input2);
-        friend inline bool operator>=(T input1,R_Number<T> input2);
-        friend inline bool operator<=(T input1,R_Number<T> input2);
-        friend inline bool operator!=(T input1,R_Number<T> input2);
-        friend inline bool operator==(T input1,R_Number<T> input2);
-        inline void operator=(R_Number<T> input);
-        inline void operator=(T input);
+        inline R_Number(T input){content=input};
+        inline R_Number<T> operator+(R_Number<T> input){return R_Number(add(content,input.content));};
+        inline R_Number<T> operator-(R_Number<T> input){return R_Number(sub(content,input.content));};
+        inline R_Number<T> operator*(R_Number<T> input){return R_Number(mul(content,input.content));};
+        inline R_Number<T> operator/(R_Number<T> input){return R_Number(div(content,input.content));};
+        friend inline R_Number<T> operator+(T input1,R_Number<T> input2){return R_Number(add(input1,input2.content));};
+        friend inline R_Number<T> operator-(T input1,R_Number<T> input2){return R_Number(sub(input1,input2.content));};
+        friend inline R_Number<T> operator*(T input1,R_Number<T> input2){return R_Number(mul(input1,input2.content));};
+        friend inline R_Number<T> operator/(T input1,R_Number<T> input2){return R_Number(div(input1,input2.content));};
+        inline void operator+=(R_Number<T> input){content=add(content,input.content)};
+        inline void operator-=(R_Number<T> input){content=sub(content,input.content)};
+        inline void operator*=(R_Number<T> input){content=mul(content,input.content)};
+        inline void operator/=(R_Number<T> input){content=div(content,input.content)};
+        inline bool operator>(R_Number<T> input){return content>input.content};
+        inline bool operator<(R_Number<T> input){return content<input.content};
+        inline bool operator>=(R_Number<T> input){return content>=input.content};
+        inline bool operator<=(R_Number<T> input){return content<=input.content};
+        inline bool operator!=(R_Number<T> input){return content!=input.content};
+        inline bool operator==(R_Number<T> input){return content==input.content};
+        friend inline bool operator>(T input1,R_Number<T> input2){return input1>input2.content};
+        friend inline bool operator<(T input1,R_Number<T> input2){return input1<input2.content};
+        friend inline bool operator>=(T input1,R_Number<T> input2){return input1>=input2.content};
+        friend inline bool operator<=(T input1,R_Number<T> input2){return input1<=input2.content};
+        friend inline bool operator!=(T input1,R_Number<T> input2){return input1!=input2.content};
+        friend inline bool operator==(T input1,R_Number<T> input2){return input1==input2.content};
+        inline void operator=(R_Number<T> input){content=input.content};
+        inline void operator=(T input){content=input};
 };
 
 //template <typename T>
