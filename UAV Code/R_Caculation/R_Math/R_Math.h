@@ -3,7 +3,6 @@
 #ifndef R_MATH_H
 #define R_MATH_H
 
-
 template<typename T> inline T add(T input1, T input2) {return input1 + input2;}
 template<typename T> inline T sub(T input1, T input2) {return input1 - input2;}
 template<typename T> inline T mul(T input1, T input2) {return input1 * input2;}
@@ -26,6 +25,7 @@ inline float div<float>(float input1, float input2){};
 #define DOUBLE_PI (6.2831853)
 #define DEGREE_TO_RADIAN (0.0174532)
 #define RADIAN_TO_DEGREE (57.2957795)
+
 
 template<typename T>class R_Number
 {
