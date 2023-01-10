@@ -13,10 +13,10 @@ template<typename T>class R_Number
         inline T mul(T input1, T input2) {return input1 * input2;}
         inline T div(T input1, T input2) {return input1 / input2;}
         #endif
-        friend inline R_Number<T> operator+(T input1,R_Number<T> input2){return R_Number(add(input1,input2.content));}
-        friend inline R_Number<T> operator-(T input1,R_Number<T> input2){return R_Number(sub(input1,input2.content));}
-        friend inline R_Number<T> operator*(T input1,R_Number<T> input2){return R_Number(mul(input1,input2.content));}
-        friend inline R_Number<T> operator/(T input1,R_Number<T> input2){return R_Number(div(input1,input2.content));}
+        friend inline T operator+(T input1,R_Number<T> input2){return add(input1,input2.content);}
+        friend inline T operator-(T input1,R_Number<T> input2){return sub(input1,input2.content);}
+        friend inline T operator*(T input1,R_Number<T> input2){return mul(input1,input2.content);}
+        friend inline T operator/(T input1,R_Number<T> input2){return div(input1,input2.content);}
         friend inline bool operator>(T input1,R_Number<T> input2){return input1>input2.content;}
         friend inline bool operator<(T input1,R_Number<T> input2){return input1<input2.content;}
         friend inline bool operator>=(T input1,R_Number<T> input2){return input1>=input2.content;}
@@ -24,21 +24,36 @@ template<typename T>class R_Number
         friend inline bool operator!=(T input1,R_Number<T> input2){return input1!=input2.content;}
         friend inline bool operator==(T input1,R_Number<T> input2){return input1==input2.content;}
     public:
+        inline R_Number(){}
         inline R_Number(T input){content=input;}
         inline R_Number<T> operator+(R_Number<T> input){return R_Number(add(content,input.content));}
         inline R_Number<T> operator-(R_Number<T> input){return R_Number(sub(content,input.content));}
         inline R_Number<T> operator*(R_Number<T> input){return R_Number(mul(content,input.content));}
         inline R_Number<T> operator/(R_Number<T> input){return R_Number(div(content,input.content));}
+        inline R_Number<T> operator+(T input){return R_Number(add(content,input));}
+        inline R_Number<T> operator-(T input){return R_Number(sub(content,input));}
+        inline R_Number<T> operator*(T input){return R_Number(mul(content,input));}
+        inline R_Number<T> operator/(T input){return R_Number(div(content,input));}
         inline void operator+=(R_Number<T> input){content=add(content,input.content);}
         inline void operator-=(R_Number<T> input){content=sub(content,input.content);}
         inline void operator*=(R_Number<T> input){content=mul(content,input.content);}
         inline void operator/=(R_Number<T> input){content=div(content,input.content);}
+        inline void operator+=(T input){content=add(content,input);}
+        inline void operator-=(T input){content=sub(content,input);}
+        inline void operator*=(T input){content=mul(content,input);}
+        inline void operator/=(T input){content=div(content,input);}
         inline bool operator>(R_Number<T> input){return content>input.content;}
         inline bool operator<(R_Number<T> input){return content<input.content;}
         inline bool operator>=(R_Number<T> input){return content>=input.content;}
         inline bool operator<=(R_Number<T> input){return content<=input.content;}
         inline bool operator!=(R_Number<T> input){return content!=input.content;}
         inline bool operator==(R_Number<T> input){return content==input.content;}
+        inline bool operator>(T input){return content>input;}
+        inline bool operator<(T input){return content<input;}
+        inline bool operator>=(T input){return content>=input;}
+        inline bool operator<=(T input){return content<=input;}
+        inline bool operator!=(T input){return content!=input;}
+        inline bool operator==(T input){return content==input;}
         inline void operator=(R_Number<T> input){content=input.content;}
         inline void operator=(T input){content=input;}
         inline operator float(){return (float)content;}
