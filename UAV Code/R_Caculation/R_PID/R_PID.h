@@ -35,8 +35,9 @@ namespace R_PID
             R_Float integrator;
 
             inline R_PID_Calculate(R_Float initial_kp, R_Float initial_ki, R_Float initial_kd, R_Float initial_kff, R_Float initial_imax, R_Float initial_E_frequency, R_Float initial_D_frequency, R_Float dt);
-            inline void reset_filter(){reset_filter_flag=true;}
             inline R_Float update(R_Float _target,R_Float measurement,bool limit);
+            inline void reset_filter(){reset_filter_flag=true;}
+            inline void reset_integrator(){integrator=0;}
     };
 };
 
