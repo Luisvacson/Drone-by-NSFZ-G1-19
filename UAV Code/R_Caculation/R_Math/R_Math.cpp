@@ -28,8 +28,8 @@ inline constexpr float radian_to_degree(T input) {
 }
 
 template <typename T>
-inline constexpr T abs(T input) {
-    return input > 0 ? input : sub(static_cast<float>(0), input);
+inline constexpr R_Number<T> abs(R_Number<T> input) {
+    return input > 0 ? input : static_cast<float>(0)-input;
 }
 
 template <typename T>

@@ -8,17 +8,34 @@ template<typename T>class R_Number
     private:
         T content;
     public:
-        inline R_Float(R_Number<T> input);
+        inline R_Number(R_Number<T> input);
+        inline R_Number(T input);
         inline R_Number<T> operator+(R_Number<T> input);
         inline R_Number<T> operator-(R_Number<T> input);
         inline R_Number<T> operator*(R_Number<T> input);
         inline R_Number<T> operator/(R_Number<T> input);
+        friend inline R_Number<T> operator+(R_Number<T> input);
+        friend inline R_Number<T> operator-(R_Number<T> input);
+        friend inline R_Number<T> operator*(R_Number<T> input);
+        friend inline R_Number<T> operator/(R_Number<T> input);
         inline R_Number<T> operator+=(R_Number<T> input);
         inline R_Number<T> operator-=(R_Number<T> input);
         inline R_Number<T> operator*=(R_Number<T> input);
         inline R_Number<T> operator/=(R_Number<T> input);
+        inline R_Number<T> operator>(R_Number<T> input);
+        inline R_Number<T> operator<(R_Number<T> input);
+        inline R_Number<T> operator>=(R_Number<T> input);
+        inline R_Number<T> operator<=(R_Number<T> input);
+        inline R_Number<T> operator!=(R_Number<T> input);
         inline bool operator==(R_Number<T> input);
+        friend inline R_Number<T> operator>(R_Number<T> input);
+        friend inline R_Number<T> operator<(R_Number<T> input);
+        friend inline R_Number<T> operator>=(R_Number<T> input);
+        friend inline R_Number<T> operator<=(R_Number<T> input);
+        friend inline R_Number<T> operator!=(R_Number<T> input);
+        friend inline bool operator==(R_Number<T> input);
         inline void operator=(R_Number<T> input);
+        inline void operator=(T input);
 };
 
 template <typename T>
