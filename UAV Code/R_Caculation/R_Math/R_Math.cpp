@@ -2,36 +2,36 @@
 
 namespace R_MATH {
 template <typename T>
-inline bool is_zero(T input) {
+inline bool is_zero(R_Number<T> input) {
     return input == 0;
 }
 
 template <>
-inline bool is_zero<float>(float input) {
+inline bool is_zero<float>(R_Number<float> input) {
     return abs(input) < (static_cast<float>(FLOAT_EPSILON));
 }
 
 template <typename T>
-inline bool is_in_range(T input, T input_min, T input_max) {
+inline bool is_in_range(R_Number<T> input, R_Number<T> input_min, R_Number<T> input_max) {
     return input >= input_min && input <= input_max;
 };
 
 template <typename T>
-inline float degree_to_radian(T input) {
-    return mul(static_cast<float>(input), static_cast<float>(DEGREE_TO_RADIAN));
+inline R_Number<float> degree_to_radian(R_Number<T> input) {
+    return (float)(input) * (float)(DEGREE_TO_RADIAN);
 }
 template <typename T>
-inline float radian_to_degree(T input) {
-    return mul(static_cast<float>(input), static_cast<float>(RADIAN_TO_DEGREE));
-}
-
-template <typename T>
-inline T abs(T input) {
-    return input > 0 ? input : sub(static_cast<float>(0), input);
+inline R_Number<float> radian_to_degree(R_Number<T> input) {
+    return (float)(input) * (float)(RADIAN_TO_DEGREE);
 }
 
 template <typename T>
-inline T limit(T input, T input_min, T input_max) {
+inline R_Number<T> abs(R_Number<T> input) {
+    return input > 0 ? input : ((T)(0)-input);
+}
+
+template <typename T>
+inline R_Number<T> limit(R_Number<T> input, R_Number<T> input_min, R_Number<T> input_max) {
     return input < input_min ? input_min
                              : (input > input_max ? input_max : input);
 }
@@ -155,54 +155,54 @@ T arctan(T input) {
 }
 
 template <typename T>
-T exp(T input) {}
+R_Number<T> exp(R_Number<T> input) {}
 
 template <typename T>
-T sqart(T input) {}
+R_Number<T> sqart(R_Number<T> input) {}
 
 template <typename T>
-inline T max(T input1, T input2) {}
+inline R_Number<T> max(R_Number<T> input1, R_Number<T> input2) {}
 
 template <typename T>
-inline T max(T input1, T input2, T input3) {
+inline R_Number<T> max(R_Number<T> input1, R_Number<T> input2, R_Number<T> input3) {
     return max(max(input1, input2), input3);
 }
 
 template <typename T>
-inline T min(T input1, T input2) {}
+inline R_Number<T> min(R_Number<T> input1, R_Number<T> input2) {}
 
 template <typename T>
-inline T min(T input1, T input2, T input3) {
+inline R_Number<T> min(R_Number<T> input1, R_Number<T> input2, R_Number<T> input3) {
     return min(min(input1, input2), input3);
 }
 
 template <typename T1, typename T2>
-T1 power(T1 input, T2 num) {}
+R_Number<T1> power(R_Number<T1> input, R_Number<T2> num) {}
 
 template <typename T>
-T sum(T* input, int num) {}
+R_Number<T> sum(R_Number<T>* input, int num) {}
 
 template <typename T>
-T sqasum(T* input, int num) {}
+R_Number<T> sqasum(R_Number<T>* input, int num) {}
 
 template <typename T>
-T mean(T* input, int num) {}
+R_Number<T> mean(R_Number<T>* input, int num) {}
 
 template <typename T>
-T wmean(T input1, T input2, T weight1) {}
+R_Number<T> wmean(R_Number<T> input1, R_Number<T> input2, R_Number<T> weight1) {}
 
 template <typename T>
-T sqamean(T* input, int num) {}
-
-template <typename T1, typename T2>
-void swap(T1* input1, T2* input2) {}
+R_Number<T> sqamean(R_Number<T>* input, int num) {}
 
 template <typename T>
-T arctan2(T input1, T input2) {}
+void swap(R_Number<T>* input1, R_Number<T>* input2) {}
 
 template <typename T>
-T sat(T input1, T input2) {}
+R_Number<T> arctan2(R_Number<T> input1, R_Number<T> input2) {}
 
 template <typename T>
-float sign(T input2) {}
+R_Number<T> sat(R_Number<T> input1, R_Number<T> input2) {}
+
+template <typename T>
+R_Number<float> sign(R_Number<T> input2) {}
 };  // namespace R_MATH
