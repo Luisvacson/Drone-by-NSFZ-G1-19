@@ -3,12 +3,29 @@
 #ifndef R_MATH_H
 #define R_MATH_H
 
-#ifndef R_USE_FPU
-    template<typename T> inline T add(T input1, T input2) {return input1 + input2;}
-    template<typename T> inline T sub(T input1, T input2) {return input1 - input2;}
-    template<typename T> inline T mul(T input1, T input2) {return input1 * input2;}
-    template<typename T> inline T div(T input1, T input2) {return input1 / input2;}
+
+template<typename T> inline T add(T input1, T input2) {return input1 + input2;}
+template<typename T> inline T sub(T input1, T input2) {return input1 - input2;}
+template<typename T> inline T mul(T input1, T input2) {return input1 * input2;}
+template<typename T> inline T div(T input1, T input2) {return input1 / input2;}
+
+#ifdef R_USE_FPU
+template <>
+inline float add<float>(float input1, float input2){};
+template <>
+inline float sub<float>(float input1, float input2){};
+template <>
+inline float mul<float>(float input1, float input2){};
+template <>
+inline float div<float>(float input1, float input2){};
 #endif
+
+#define FLOAT_EPSILON (0.0001)
+#define PI (3.1415926)
+#define HALF_PI (1.5707963)
+#define DOUBLE_PI (6.2831853)
+#define DEGREE_TO_RADIAN (0.0174532)
+#define RADIAN_TO_DEGREE (57.2957795)
 
 template<typename T>class R_Number
 {
@@ -61,34 +78,6 @@ template<typename T>class R_Number
         inline void operator=(T input){content=input;}
         inline operator float(){return (float)content;}
 };
-
-//template <typename T>
-//inline T add(T input1, T input2) {
-//    return input1 + input2;
-//};
-//template <typename T>
-//inline T sub(T input1, T input2) {
-//    return input1 - input2;
-//};
-//template <typename T>
-//inline T mul(T input1, T input2) {
-//    return input1 * input2;
-//};
-//template <typename T>
-//inline T div(T input1, T input2) {
-//    return input1 / input2;
-//};
-//
-//#ifdef R_USE_FPU
-//template <>
-//inline float add<float>(float input1, float input2){};
-//template <>
-//inline float sub<float>(float input1, float input2){};
-//template <>
-//inline float mul<float>(float input1, float input2){};
-//template <>
-//inline float div<float>(float input1, float input2){};
-//#endif
 
 #define FLOAT_EPSILON (0.0001)
 #define PI (3.1415926)
