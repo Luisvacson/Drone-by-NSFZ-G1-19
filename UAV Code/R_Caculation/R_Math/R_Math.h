@@ -79,6 +79,8 @@ template<typename T>class R_Number
         inline operator float(){return (float)content;}
 };
 
+typedef R_Number<float> R_Float;
+
 #define FLOAT_EPSILON (0.0001)
 #define PI (3.1415926)
 #define HALF_PI (1.5707963)
