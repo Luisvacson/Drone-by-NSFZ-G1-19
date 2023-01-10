@@ -44,7 +44,6 @@ T sin(T input) {
     float Index = input;
     float Fact = static_cast<float>(1.0);
     float TaylorExpansion = input;
-    int cnt = 0;
     do {
         Fact = mul(Fact, (float)mul(add(Iterator, 1), add(Iterator, 2)));
         Index = mul(Index, (float)mul(input, input));
@@ -52,9 +51,7 @@ T sin(T input) {
         Res = div(mul(Index, (float)Negation), Fact);
         TaylorExpansion = add(TaylorExpansion, Res);
         Iterator = add(Iterator, 2);
-        ++cnt;
     } while (abs(Res) > 1e-7);
-    printf("%d\n", cnt);
     return TaylorExpansion;
 }
 
@@ -209,7 +206,4 @@ T sat(T input1, T input2) {}
 
 template <typename T>
 float sign(T input2) {}
-};  // namespace R_MATH
-using namespace R_MATH;
-
-signed main() { printf("%.6lf\n", sin(PI / 3)); }
+};  // namespace R_MAT
