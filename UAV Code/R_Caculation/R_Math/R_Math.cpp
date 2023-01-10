@@ -1,6 +1,5 @@
 #include "R_Math.h"
 
-#include <stdio.h>
 namespace R_MATH {
 template <typename T>
 inline bool is_zero(T input) {
@@ -27,13 +26,8 @@ inline float radian_to_degree(T input) {
 }
 
 template <typename T>
-<<<<<<< HEAD
-inline constexpr R_Number<T> abs(R_Number<T> input) {
-    return input > 0 ? input : static_cast<float>(0)-input;
-=======
 inline T abs(T input) {
     return input > 0 ? input : sub(static_cast<float>(0), input);
->>>>>>> e3530024a1d1b65fd0b0be9df5a2dc061f6ce123
 }
 
 template <typename T>
