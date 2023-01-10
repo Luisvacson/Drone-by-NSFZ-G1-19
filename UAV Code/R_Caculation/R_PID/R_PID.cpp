@@ -18,7 +18,7 @@ namespace R_PID
         derivative=(float)(0);
     }
 
-    void R_PID_Calculate::update(R_Float _target,R_Float measurement)
+    inline R_Float R_PID_Calculate::update(R_Float _target,R_Float measurement,bool limit)
     {
         target=_target;
         if(reset_filter_flag)
@@ -34,5 +34,18 @@ namespace R_PID
             R_Float _derivative=(error-last_error)/delta_time;
             derivative=D_filter.Calculate(_derivative,derivative);
         }
+        if(is_zero(parameter.ki))
+        {
+            integrator=0.0f;
+        }
+        else
+        {
+            if(!(((limit&&is_postive(integrator))&&is_postive(error))||((limit&&is_negative(integrator))&&is_negative(error))))
+            {
+                integrator+=((error*delta_time)*parameter.ki);
+                integrator=R_MATH::limit(integrator,(float)0-imax,imax);
+            }
+        }
+        return error*parameter.kp+integrator+derivative*parameter.kd+target*kff;
     }
 };

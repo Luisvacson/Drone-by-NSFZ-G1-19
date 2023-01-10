@@ -2,16 +2,6 @@
 
 namespace R_MATH {
 template <typename T>
-inline bool is_zero(R_Number<T> input) {
-    return input == 0;
-}
-
-template <>
-inline bool is_zero<float>(R_Number<float> input) {
-    return abs(input) < (static_cast<float>(FLOAT_EPSILON));
-}
-
-template <typename T>
 inline bool is_in_range(R_Number<T> input, R_Number<T> input_min, R_Number<T> input_max) {
     return input >= input_min && input <= input_max;
 };

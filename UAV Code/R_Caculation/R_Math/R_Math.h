@@ -19,18 +19,16 @@ template <>
 inline float div<float>(float input1, float input2){};
 #endif
 
-#define FLOAT_EPSILON (0.0001)
+#define FLOAT_EPSILON (0.00001)
 #define PI (3.1415926)
 #define HALF_PI (1.5707963)
 #define DOUBLE_PI (6.2831853)
 #define DEGREE_TO_RADIAN (0.0174532)
 #define RADIAN_TO_DEGREE (57.2957795)
 
-
 template<typename T>class R_Number
 {
     private:
-        T content;
         friend inline R_Number<T> operator+(T input1,R_Number<T> input2){return R_Number(add(input1,input2.content));}
         friend inline R_Number<T> operator-(T input1,R_Number<T> input2){return R_Number(sub(input1,input2.content));}
         friend inline R_Number<T> operator*(T input1,R_Number<T> input2){return R_Number(mul(input1,input2.content));}
@@ -42,6 +40,7 @@ template<typename T>class R_Number
         friend inline bool operator!=(T input1,R_Number<T> input2){return input1!=input2.content;}
         friend inline bool operator==(T input1,R_Number<T> input2){return input1==input2.content;}
     public:
+        T content;
         inline R_Number(){}
         inline R_Number(T input){content=input;}
         inline R_Number<T> operator+(R_Number<T> input){return R_Number(add(content,input.content));}
@@ -81,9 +80,14 @@ template<typename T>class R_Number
 
 typedef class R_Number<float> R_Float;
 
+inline bool is_zero(float input){return (input>(-FLOAT_EPSILON)&&input<FLOAT_EPSILON);}
+inline bool is_postive(float input){return input>FLOAT_EPSILON;}
+inline bool is_negative(float input){return input<(-FLOAT_EPSILON);}
+inline bool is_zero(R_Float input){return (input.content>(-FLOAT_EPSILON)&&input.content<FLOAT_EPSILON);}
+inline bool is_postive(R_Float input){return input.content>FLOAT_EPSILON;}
+inline bool is_negative(R_Float input){return input.content<(-FLOAT_EPSILON);}
+
 namespace R_MATH {
-template <typename T>
-inline bool is_zero(R_Number<T> input);
 template <typename T>
 inline bool is_in_range(R_Number<T> input, R_Number<T> input_min, R_Number<T> input_max);
 template <typename T>
