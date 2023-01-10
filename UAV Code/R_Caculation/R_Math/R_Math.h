@@ -8,16 +8,15 @@ template<typename T>class R_Number
     private:
         T content;
     public:
-        inline R_Number(R_Number<T> input);
         inline R_Number(T input);
         inline R_Number<T> operator+(R_Number<T> input);
         inline R_Number<T> operator-(R_Number<T> input);
         inline R_Number<T> operator*(R_Number<T> input);
         inline R_Number<T> operator/(R_Number<T> input);
-        friend inline R_Number<T> operator+(R_Number<T> input);
-        friend inline R_Number<T> operator-(R_Number<T> input);
-        friend inline R_Number<T> operator*(R_Number<T> input);
-        friend inline R_Number<T> operator/(R_Number<T> input);
+        friend inline R_Number<T> operator+(T input1,R_Number<T> input2);
+        friend inline R_Number<T> operator-(T input1,R_Number<T> input2);
+        friend inline R_Number<T> operator*(T input1,R_Number<T> input2);
+        friend inline R_Number<T> operator/(T input1,R_Number<T> input2);
         inline R_Number<T> operator+=(R_Number<T> input);
         inline R_Number<T> operator-=(R_Number<T> input);
         inline R_Number<T> operator*=(R_Number<T> input);
@@ -28,12 +27,12 @@ template<typename T>class R_Number
         inline bool operator<=(R_Number<T> input);
         inline bool operator!=(R_Number<T> input);
         inline bool operator==(R_Number<T> input);
-        friend inline bool operator>(R_Number<T> input);
-        friend inline bool operator<(R_Number<T> input);
-        friend inline bool operator>=(R_Number<T> input);
-        friend inline bool operator<=(R_Number<T> input);
-        friend inline bool operator!=(R_Number<T> input);
-        friend inline bool operator==(R_Number<T> input);
+        friend inline bool operator>(T input1,R_Number<T> input2);
+        friend inline bool operator<(T input1,R_Number<T> input2);
+        friend inline bool operator>=(T input1,R_Number<T> input2);
+        friend inline bool operator<=(T input1,R_Number<T> input2);
+        friend inline bool operator!=(T input1,R_Number<T> input2);
+        friend inline bool operator==(T input1,R_Number<T> input2);
         inline void operator=(R_Number<T> input);
         inline void operator=(T input);
 };
