@@ -1,73 +1,75 @@
 #include "R_Math.h"
 
+#include <stdio.h>
 namespace R_MATH {
 template <typename T>
-inline constexpr bool is_zero(T input) {
+inline bool is_zero(T input) {
     return input == 0;
 }
 
 template <>
-inline constexpr bool is_zero<float>(float input) {
+inline bool is_zero<float>(float input) {
     return abs(input) < (static_cast<float>(FLOAT_EPSILON));
 }
 
 template <typename T>
-inline constexpr bool is_in_range(T input, T input_min, T input_max) {
+inline bool is_in_range(T input, T input_min, T input_max) {
     return input >= input_min && input <= input_max;
 };
 
 template <typename T>
-inline constexpr float degree_to_radian(T input) {
-    return mult(static_cast<float>(input),
-                static_cast<float>(DEGREE_TO_RADIAN));
+inline float degree_to_radian(T input) {
+    return mul(static_cast<float>(input), static_cast<float>(DEGREE_TO_RADIAN));
 }
 template <typename T>
-inline constexpr float radian_to_degree(T input) {
-    return mult(static_cast<float>(input),
-                static_cast<float>(RADIAN_TO_DEGREE));
+inline float radian_to_degree(T input) {
+    return mul(static_cast<float>(input), static_cast<float>(RADIAN_TO_DEGREE));
 }
 
 template <typename T>
-inline constexpr T abs(T input) {
+inline T abs(T input) {
     return input > 0 ? input : sub(static_cast<float>(0), input);
 }
 
 template <typename T>
-inline constexpr T limit(T input, T input_min, T input_max) {
+inline T limit(T input, T input_min, T input_max) {
     return input < input_min ? input_min
                              : (input > input_max ? input_max : input);
 }
 
 template <typename T>
-constexpr T sin(T input) {
+T sin(T input) {
     int Iterator = 1, Negation = 1;
     float Res;
     float Index = input;
     float Fact = static_cast<float>(1.0);
     float TaylorExpansion = input;
+    int cnt = 0;
     do {
-        Fact = mul(Fact, mul(add(Iterator, 1), add(Iterator, 2)));
-        Index = mul(Index, mul(input, input));
+        Fact = mul(Fact, (float)mul(add(Iterator, 1), add(Iterator, 2)));
+        Index = mul(Index, (float)mul(input, input));
         Negation = -Negation;
-        Res = div(mul(Index, Negation), Fact);
+        Res = div(mul(Index, (float)Negation), Fact);
         TaylorExpansion = add(TaylorExpansion, Res);
         Iterator = add(Iterator, 2);
+        ++cnt;
     } while (abs(Res) > 1e-7);
+    printf("%d\n", cnt);
     return TaylorExpansion;
 }
 
 template <typename T>
-constexpr T cos(T input) {
+T cos(T input) {
     int Iterator = 0, Negation = 1;
     float Res;
     float Index = static_cast<float>(1.0);
     float Fact = static_cast<float>(1.0);
     float TaylorExpansion = static_cast<float>(1.0);
     do {
-        Fact = mul(Fact, mul(add(Iterator, 1), add(Iterator, 2)));
+        Fact = mul(Fact, (float)mul(add(Iterator, 1), add(Iterator, 2)));
         Index = mul(Index, mul(input, input));
         Negation = -Negation;
-        Res = div(mul(Index, Negation), Fact);
+        Res = div(mul(Index, (float)Negation), Fact);
         TaylorExpansion = add(TaylorExpansion, Res);
         Iterator = add(Iterator, 2);
     } while (abs(Res) > 1e-7);
@@ -75,68 +77,139 @@ constexpr T cos(T input) {
 }
 
 template <typename T>
-constexpr T tan(T input) {
+T tan(T input) {
     return div(sin(input), cos(input));
 }
 
 template <typename T>
-constexpr T arcsin(T input) {}
+T arcsin(T input) {}
 
 template <typename T>
-constexpr T arccos(T input) {}
+T arccos(T input) {}
 
 template <typename T>
-constexpr T arctan(T input) {}
+T arctan(T input) {
+    const long angle[] = {11520, 6801, 3593, 1824, 916, 458, 229, 115,
+                          57,    29,   14,   7,    4,   2,   1};
+
+    long Iterator = 1;
+    long x = (long)(add(add(add(add(add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 3,
+                                    add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 1)
+                                    << 3,
+                                add(add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 3,
+                                    add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 1)
+                                    << 1)
+                                << 3,
+                            add(add(add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 3,
+                                    add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 1)
+                                    << 3,
+                                add(add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 3,
+                                    add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 1)
+                                    << 1)
+                                << 1)
+                            << 3,
+                        add(add(add(add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 3,
+                                    add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 1)
+                                    << 3,
+                                add(add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 3,
+                                    add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 1)
+                                    << 1)
+                                << 3,
+                            add(add(add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 3,
+                                    add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 1)
+                                    << 3,
+                                add(add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 3,
+                                    add(add(input << 3, input << 1) << 3,
+                                        add(input << 3, input << 1) << 1)
+                                        << 1)
+                                    << 1)
+                                << 1)
+                            << 1));
+    long y = 1e6;
+}
 
 template <typename T>
-constexpr T exp(T input) {}
+T exp(T input) {}
 
 template <typename T>
-constexpr T sqart(T input) {}
+T sqart(T input) {}
 
 template <typename T>
-inline constexpr T max(T input1, T input2) {}
+inline T max(T input1, T input2) {}
 
 template <typename T>
-inline constexpr T max(T input1, T input2, T input3) {
+inline T max(T input1, T input2, T input3) {
     return max(max(input1, input2), input3);
 }
 
 template <typename T>
-inline constexpr T min(T input1, T input2) {}
+inline T min(T input1, T input2) {}
 
 template <typename T>
-inline constexpr T min(T input1, T input2, T input3) {
+inline T min(T input1, T input2, T input3) {
     return min(min(input1, input2), input3);
 }
 
 template <typename T1, typename T2>
-constexpr T1 power(T1 input, T2 num) {}
+T1 power(T1 input, T2 num) {}
 
 template <typename T>
-constexpr T sum(T* input, int num) {}
+T sum(T* input, int num) {}
 
 template <typename T>
-constexpr T sqasum(T* input, int num) {}
+T sqasum(T* input, int num) {}
 
 template <typename T>
-constexpr T mean(T* input, int num) {}
+T mean(T* input, int num) {}
 
 template <typename T>
-constexpr T wmean(T input1, T input2, T weight1) {}
+T wmean(T input1, T input2, T weight1) {}
 
 template <typename T>
-constexpr T sqamean(T* input, int num) {}
+T sqamean(T* input, int num) {}
 
 template <typename T1, typename T2>
 void swap(T1* input1, T2* input2) {}
 
 template <typename T>
-constexpr T arctan2(T input1, T input2) {}
+T arctan2(T input1, T input2) {}
 
 template <typename T>
-constexpr T sat(T input1, T input2) {}
+T sat(T input1, T input2) {}
 
 template <typename T>
-constexpr float sign(T input2) {}
+float sign(T input2) {}
 };  // namespace R_MATH
+using namespace R_MATH;
+
+signed main() { printf("%.6lf\n", sin(PI / 3)); }
