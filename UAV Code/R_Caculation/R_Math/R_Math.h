@@ -31,10 +31,12 @@ template<typename T>class R_Number
         inline R_Number<T> operator-(R_Number<T> input){return R_Number(sub(content,input.content));}
         inline R_Number<T> operator*(R_Number<T> input){return R_Number(mul(content,input.content));}
         inline R_Number<T> operator/(R_Number<T> input){return R_Number(div(content,input.content));}
+        inline R_Number<T> operator%(R_Number<T> input){return R_Number(content%input.content);}
         inline R_Number<T> operator+(T input){return R_Number(add(content,input));}
         inline R_Number<T> operator-(T input){return R_Number(sub(content,input));}
         inline R_Number<T> operator*(T input){return R_Number(mul(content,input));}
         inline R_Number<T> operator/(T input){return R_Number(div(content,input));}
+        inline R_Number<T> operator%(T input){return R_Number(content%input);}
         inline void operator+=(R_Number<T> input){content=add(content,input.content);}
         inline void operator-=(R_Number<T> input){content=sub(content,input.content);}
         inline void operator*=(R_Number<T> input){content=mul(content,input.content);}
