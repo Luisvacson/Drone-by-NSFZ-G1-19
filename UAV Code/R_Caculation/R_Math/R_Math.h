@@ -13,10 +13,10 @@ template<typename T>class R_Number
         inline T mul(T input1, T input2) {return input1 * input2;}
         inline T div(T input1, T input2) {return input1 / input2;}
         #endif
-        friend inline T operator+(T input1,R_Number<T> input2){return add(input1,input2.content);}
-        friend inline T operator-(T input1,R_Number<T> input2){return sub(input1,input2.content);}
-        friend inline T operator*(T input1,R_Number<T> input2){return mul(input1,input2.content);}
-        friend inline T operator/(T input1,R_Number<T> input2){return div(input1,input2.content);}
+        friend inline R_Number<T> operator+(T input1,R_Number<T> input2){return R_Number(add(input1,input2.content));}
+        friend inline R_Number<T> operator-(T input1,R_Number<T> input2){return R_Number(sub(input1,input2.content));}
+        friend inline R_Number<T> operator*(T input1,R_Number<T> input2){return R_Number(mul(input1,input2.content));}
+        friend inline R_Number<T> operator/(T input1,R_Number<T> input2){return R_Number(div(input1,input2.content));}
         friend inline bool operator>(T input1,R_Number<T> input2){return input1>input2.content;}
         friend inline bool operator<(T input1,R_Number<T> input2){return input1<input2.content;}
         friend inline bool operator>=(T input1,R_Number<T> input2){return input1>=input2.content;}
