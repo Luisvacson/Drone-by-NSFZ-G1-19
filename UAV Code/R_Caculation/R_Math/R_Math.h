@@ -3,22 +3,22 @@
 #ifndef R_MATH_H
 #define R_MATH_H
 
-class R_Float
+template<typename T>class R_Number
 {
     private:
-        float content;
+        T content;
     public:
-        inline R_Float(float input);
-        inline R_Float operator+(R_Float input);
-        inline R_Float operator-(R_Float input);
-        inline R_Float operator*(R_Float input);
-        inline R_Float operator/(R_Float input);
-        inline R_Float operator+=(R_Float input);
-        inline R_Float operator-=(R_Float input);
-        inline R_Float operator*=(R_Float input);
-        inline R_Float operator/=(R_Float input);
-        inline bool operator==(R_Float input);
-        inline void operator=(R_Float input);
+        inline R_Float(R_Number<T> input);
+        inline R_Number<T> operator+(R_Number<T> input);
+        inline R_Number<T> operator-(R_Number<T> input);
+        inline R_Number<T> operator*(R_Number<T> input);
+        inline R_Number<T> operator/(R_Number<T> input);
+        inline R_Number<T> operator+=(R_Number<T> input);
+        inline R_Number<T> operator-=(R_Number<T> input);
+        inline R_Number<T> operator*=(R_Number<T> input);
+        inline R_Number<T> operator/=(R_Number<T> input);
+        inline bool operator==(R_Number<T> input);
+        inline void operator=(R_Number<T> input);
 };
 
 template <typename T>
