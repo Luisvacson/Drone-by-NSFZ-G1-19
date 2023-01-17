@@ -15,7 +15,7 @@ namespace R_VECTOR
 
             inline r_vector(const T input[N]);
             ~r_vector();
-            inline void copy(r_vector<T,N> input);
+            inline void operator=(r_vector<T,N> input);
             r_vector<T,N> operator+(r_vector<T,N> input);
             r_vector<T,N> operator-(r_vector<T,N> input);
             r_vector<T,N> operator-(void);
@@ -33,29 +33,29 @@ namespace R_VECTOR
             r_vector<T,N> dcv();
     };
 
-    template<typename T>class r_vector3d
+    class r_vector3d
     {
         public:
-            T content[3];
+            R_Float content[3];
 
-            inline r_vector3d(const T input[3]);
+            inline r_vector3d(const R_Float input[3]);
             ~r_vector3d();
-            inline void copy(r_vector3d<T> input);
-            r_vector3d<T> operator+(r_vector3d<T> input);
-            r_vector3d<T> operator-(r_vector3d<T> input);
-            r_vector3d<T> operator-(void);
-            void operator+=(r_vector3d<T> input);
-            void operator-=(r_vector3d<T> input);
-            constexpr r_vector3d<T> Num_prod(T input);
-            constexpr void scale(T input);
-            float dot_prod(r_vector3d<T> input);
-            r_vector3d<T> cross_prod(r_vector3d<T> input);
-            inline T norm();
+            inline void operator=(r_vector3d input);
+            r_vector3d operator+(r_vector3d input);
+            r_vector3d operator-(r_vector3d input);
+            r_vector3d operator-(void);
+            void operator+=(r_vector3d input);
+            void operator-=(r_vector3d input);
+            constexpr r_vector3d Num_prod(R_Float input);
+            constexpr void scale(R_Float input);
+            float dot_prod(r_vector3d input);
+            r_vector3d cross_prod(r_vector3d input);
+            inline R_Float norm();
             void normalize();
-            float exp_error(r_vector3d<T> input);
+            float exp_error(r_vector3d input);
             inline bool is_zero();
-            constexpr r_vector3d<T> satgd(T input);
-            r_vector3d<T> dcv();
+            constexpr r_vector3d satgd(R_Float input);
+            r_vector3d dcv();
     };
 };
 

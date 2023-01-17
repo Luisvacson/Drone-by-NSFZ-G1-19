@@ -13,7 +13,7 @@ namespace R_MATRIX
     {}
 
     template<typename T,int M,int N>
-    inline void r_matrix<T,M,N>::copy(r_matrix<T,M,N> input)
+    inline void r_matrix<T,M,N>::operator=(r_matrix<T,M,N> input)
     {
         int i,j;
         for(i=0;i<M;i++)
@@ -62,16 +62,13 @@ namespace R_MATRIX
     inline bool r_matrix<T,M,N>::is_zero()
     {}
     
-    template<typename T>
-    inline r_matrix3d<T>::r_matrix3d(const T input[3][3])
+    inline r_matrix3d::r_matrix3d(const R_Float input[3][3])
     {}
 
-    template<typename T>
-    r_matrix3d<T>::~r_matrix3d()
+    r_matrix3d::~r_matrix3d()
     {}
 
-    template<typename T>
-    inline void copy(r_matrix3d<T> input)
+    inline void r_matrix3d::operator=(r_matrix3d input)
     {
         content[0][0]=input.content[0][0];
         content[0][1]=input.content[0][1];
@@ -84,41 +81,32 @@ namespace R_MATRIX
         content[2][2]=input.content[2][2];
     }
 
-    template<typename T>
-    r_matrix3d<T> r_matrix3d<T>::operator+(r_matrix3d<T> input)
+    r_matrix3d r_matrix3d::operator+(r_matrix3d input)
     {}
 
-    template<typename T>
-    r_matrix3d<T> r_matrix3d<T>::operator-(r_matrix3d<T> input)
+    r_matrix3d r_matrix3d::operator-(r_matrix3d input)
     {}
 
-    template<typename T>
-    void r_matrix3d<T>::operator+=(r_matrix3d<T> input)
+    void r_matrix3d::operator+=(r_matrix3d input)
     {}
 
-    template<typename T>
-    void r_matrix3d<T>::operator-=(r_matrix3d<T> input)
+    void r_matrix3d::operator-=(r_matrix3d input)
     {}
 
-    template<typename T>
     template<int K> 
-    r_matrix<T,3,K> r_matrix3d<T>::operator*(r_matrix<T,3,K> input)
+    r_matrix<R_Float,3,K> r_matrix3d::operator*(r_matrix<R_Float,3,K> input)
     {}
 
-    template<typename T>
-    constexpr r_matrix3d<T> r_matrix3d<T>::num_prod(T input)
+    constexpr r_matrix3d r_matrix3d::num_prod(R_Float input)
     {}
 
-    template<typename T>
-    constexpr void r_matrix3d<T>::scale(T input)
+    constexpr void r_matrix3d::scale(R_Float input)
     {}
 
-    template<typename T>
-    r_matrix3d<T> r_matrix3d<T>::transpose()
+    r_matrix3d r_matrix3d::transpose()
     {}
 
-    template<typename T>
-    inline bool r_matrix3d<T>::is_zero()
+    inline bool r_matrix3d::is_zero()
     {}
 
 };

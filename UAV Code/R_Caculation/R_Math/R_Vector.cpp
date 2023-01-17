@@ -17,7 +17,7 @@ namespace R_VECTOR
     }
 
     template<typename T,int N>
-    inline void r_vector<T,N>::copy(r_vector<T,N> input)
+    inline void r_vector<T,N>::operator=(r_vector<T,N> input)
     {
         R_Memory::memcpy(content,input.content,sizeof(T)*N);
     }
@@ -82,79 +82,64 @@ namespace R_VECTOR
     r_vector<T,N>::r_vector<T,N> dcv()
     {}
 
-    template<typename T>
-    inline r_vector3d<T>::r_vector3d(const T input[3])
+    
+    inline r_vector3d::r_vector3d(const R_Float input[3])
     {}
 
-    template<typename T>
-    r_vector3d<T>::~r_vector3d()
+    
+    r_vector3d::~r_vector3d()
     {}
 
-    template<typename T>
-    inline void copy(r_vector3d<T> input)
+    
+    inline void r_vector3d::operator=(r_vector3d input)
     {
         content[0]=input.content[0];
         content[1]=input.content[1];
         content[2]=input.content[2];
     }
 
-    template<typename T>
-    r_vector3d<T> r_vector3d<T>::operator+(r_vector3d<T> input)
+    r_vector3d r_vector3d::operator+(r_vector3d input)
     {}
 
-    template<typename T>
-    r_vector3d<T> r_vector3d<T>::operator-(r_vector3d<T> input)
+    r_vector3d r_vector3d::operator-(r_vector3d input)
+    {}
+    
+    r_vector3d r_vector3d::operator-(void)
+    {}
+    
+    void r_vector3d::operator+=(r_vector3d input)
+    {}
+    
+    void r_vector3d::operator-=(r_vector3d input)
+    {}
+    
+    constexpr r_vector3d r_vector3d::Num_prod(R_Float input)
     {}
 
-    template<typename T>
-    r_vector3d<T> r_vector3d<T>::operator-(void)
+    constexpr void r_vector3d::scale(R_Float input)
     {}
 
-    template<typename T>
-    void r_vector3d<T>::operator+=(r_vector3d<T> input)
+    float r_vector3d::dot_prod(r_vector3d input)
     {}
 
-    template<typename T>
-    void r_vector3d<T>::operator-=(r_vector3d<T> input)
+    r_vector3d r_vector3d::cross_prod(r_vector3d input)
+    {}
+    
+    inline R_Float r_vector3d::norm()
+    {}
+    
+    void r_vector3d::normalize()
     {}
 
-    template<typename T>
-    constexpr r_vector3d<T> r_vector3d<T>::Num_prod(T input)
+    float r_vector3d::exp_error(r_vector3d input)
     {}
 
-    template<typename T>
-    constexpr void r_vector3d<T>::scale(T input)
+    inline bool r_vector3d::is_zero()
     {}
 
-    template<typename T>
-    float r_vector3d<T>::dot_prod(r_vector3d<T> input)
+    constexpr r_vector3d r_vector3d::satgd(R_Float input)
     {}
 
-    template<typename T>
-    r_vector3d<T> r_vector3d<T>::cross_prod(r_vector3d<T> input)
-    {}
-
-    template<typename T>
-    inline T r_vector3d<T>::norm()
-    {}
-
-    template<typename T>
-    void r_vector3d<T>::normalize()
-    {}
-
-    template<typename T>
-    float r_vector3d<T>::exp_error(r_vector3d<T> input)
-    {}
-
-    template<typename T>
-    inline bool r_vector3d<T>::is_zero()
-    {}
-
-    template<typename T>
-    constexpr r_vector3d<T> r_vector3d<T>::satgd(T input)
-    {}
-
-    template<typename T>
-    r_vector3d<T> r_vector3d<T>::dcv()
+    r_vector3d r_vector3d::dcv()
     {}
 };
