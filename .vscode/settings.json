@@ -12,5 +12,9 @@
     "code-runner.preserveFocus": true,
     "code-runner.clearPreviousOutput": false,
     "code-runner.ignoreSelection": true,
-    "C_Cpp.clang_format_sortIncludes": true
+    "C_Cpp.clang_format_sortIncludes": true,
+    "matlab.mlintpath": "D:\\Matlab\\Polyspace\\R2020b\\bin\\win64\\mlint.exe",
+    "files.associations": {"*.m": "matlab"},
+    "matlab.matlabpath": "D:\\Matlab\\Polyspace\\R2020b\\bin\\matlab.exe",
+    "matlab.linterEncoding": "gb2312",
 }
