@@ -22,7 +22,8 @@ syms omn ome omd 'real'; %earth rotation vector in local NED axes - rad/sec
 syms daxcov daycov dazcov dvxcov dvycov dvzcov 'real'; %delta angle and delta velocity measurement variances
 syms rvn rve rvd 'real' %variances for NED velocity measurements - (m/sec)^2
 syms rpn rpe rpd 'real' %variances for NED position measurements - m^2
-syms rmag 'real'  %variance for magnetic flux measurements - milligauss^2
+syms rmag 'real' %variance for magnetic flux measurements - milligauss^2
+syms rdec 'real' %variance for magnetic declination measurements - rad^2
 
 da_bias = [da_bias_x;da_bias_y;da_bias_z];
 dv_bias = [dv_bias_x;dv_bias_y;dv_bias_z];
@@ -136,16 +137,16 @@ K_PE = (P*transpose(H_PE))/(H_PE*P*transpose(H_PE) + rpe);
 H_PD = jacobian(pd,state_vector);
 K_PD = (P*transpose(H_PD))/(H_PD*P*transpose(H_PD) + rpd);
 
-% combine into a single H and K matrix (note these matrices cannot be used
-% for a single step fusion, so each row|column mst be used in a separate
-% fusion step
+%combine into a single H and K matrix (note these matrices cannot be used
+%for a single step fusion, so each row|column mst be used in a separate
+%fusion step
 H_VP  = [H_VN;H_VE;H_VD;H_PN;H_PE;H_PD];
 clear    H_VN H_VE H_VD H_PN H_PE H_PD;
 K_VP = [K_VN,K_VE,K_VD,K_PN,K_PE,K_PD];
 clear   K_VN K_VE K_VD K_PN K_PE K_PD;
 [K_VP,OK_VP] = OptimiseAlgebra(K_VP,'OK_VP');
 
-%% derive equations for fusion of magnetic field measurement
+%%derive equations for fusion of magnetic field measurement
 mag_measurement = transpose(tbn)*[magn;mage;magd] + [mag_bias_x;mag_bias_y;mag_bias_z]; % predicted measurement
 H_MAG = jacobian(mag_measurement,state_vector); % measurement Jacobian
 [H_MAG,OH_MAG] = OptimiseAlgebra(H_MAG,'OH_MAG');
@@ -157,9 +158,20 @@ K_MY = (P*transpose(H_MAG(2,:)))/(H_MAG(2,:)*P*transpose(H_MAG(2,:)) + rmag); % 
 K_MZ = (P*transpose(H_MAG(3,:)))/(H_MAG(3,:)*P*transpose(H_MAG(3,:)) + rmag); % Kalman gain vector
 [K_MZ,OK_MZ]=OptimiseAlgebra(K_MZ,'OK_MZ');
 
+%%derive equations for fusion of magnetic declination measurement
+dec_measurement = atan(mage/magn);
+H_DEC = jacobian(dec_measurement,state_vector);
+H_DEC = simplify(H_DEC);
+K_DEC = (P*transpose(H_DEC))/(H_DEC*P*transpose(H_DEC) + rdec);
+K_DEC = simplify(K_DEC);
+
+%%derive equations for fusion of yaw (yaw321)
+
+
 file_name = 'ScriptOutput.mat';
 save(file_name);
 
+OutputFormater(nstate);
 
 
 
