@@ -13,8 +13,9 @@ syms mag_bias_x mag_bias_y mag_bias_z 'real' %body magnetic field in xyz - milli
 state_vector = [q1;q2;q3;q4;vn;ve;vd;pn;pe;pd;da_bias_x;da_bias_y;da_bias_z;dv_bias_x;dv_bias_y;dv_bias_z;magn;mage;magd;mag_bias_x;mag_bias_y;mag_bias_z];
 nstate = numel(stateVector);
 
-syms da_measurement_x da_measurement_y da_measurement_z 'real' %delta angle measurement in XYZ - rad
-syms dv_measurement_x dv_measurement_y dv_measurement_z 'real' %delta velocity measurement in XYZ - m/s
+syms acc_r_x acc_r_y acc_r_z 'real' %acc postion in XYZ
+syms omega_x omega_y omega_z 'real' %delta angle measurement in XYZ - rad
+syms acc_x acc_y acc_z 'real' %acc measurement in XYZ - m/s^2
 syms dt 'real' %measurement time step - s
 syms gn ge gd 'real' %NED gravity - m/sec^2
 syms omn ome omd 'real'; %earth rotation vector in local NED axes - rad/sec
@@ -26,8 +27,8 @@ syms rmag 'real'  %variance for magnetic flux measurements - milligauss^2
 da_bias = [da_bias_x;da_bias_y;da_bias_z];
 dv_bias = [dv_bias_x;dv_bias_y;dv_bias_z];
 
-da_measurement = [da_measurement_x,da_measurement_y,da_measurement_z];
-dv_measurement = [dv_measurement_x,dv_measurement_y,dv_measurement_z];
+da_measurement = [omega_x,omega_y,omega_z]*dt;
+acc_measurement = [acc_x,acc_y,acc_z];
 
 tbn = Quat2Tbn([q1,q2,q3,q4]);
 
@@ -41,7 +42,7 @@ da = da_measurement - da_bias;
 %Ignore sculling as this effect is negligible in terms of covariance growth 
 %compared to other effects for our grade of sensor
 %deltaVelocity = dv - dv_b + 0.5*cross(da,dv) + 1/12*(cross(da_prev,dv) + cross(dv_prev,da));
-dv = dv_measurement - dv_bias;
+dv = acc_measurement*dt - dv_bias;
 
 quat = [q0;q1;q2;q3];
 
@@ -57,7 +58,8 @@ quat_new = QuatMult(quat,dquat);
 
 %define the velocity update equations
 %vNew = [vn;ve;vd] + [gn;ge;gd]*dt + Tbn*deltaVelocity - cross(2*[omn; ome; omd],[vn;ve;vd])*dt;
-v_new = [vn;ve;vd] + [gn;ge;gd]*dt + tbn*dv;
+%rotation correction
+v_new = [vn;ve;vd] + [gn;ge;gd]*dt + tbn*dv - cross([omega_x,omega_y,omega_z],cross([omega_x,omega_y,omega_z],[acc_r_x,acc_r_y,acc_r_z]))*dt;
 
 p_new = [pn;pe;pd] + [vn;ve;vd]*dt;
 

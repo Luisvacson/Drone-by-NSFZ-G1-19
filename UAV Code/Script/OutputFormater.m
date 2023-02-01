@@ -102,4 +102,151 @@ function OutputFormater(nstate)
         fprintf(file_name,'\n');
     end
 
-    %%----------130
+    if exist('OK_VP','var')
+        [num_row,num_col] = size(OK_VP);
+        fprintf(file_name,'OK_VP: %d row(s), %d column(s)\n',num_row,num_col);
+        for row = 1:num_row
+            for col = 1:num_col
+                string = char(OK_VP(row,col));
+                fprintf(file_name,'OK_VP(%d,%d) = %s;\n',row,col,string);
+            end
+        end
+        fprintf(file_name,'\n');
+    end
+
+    if exist('K_VP','var')
+        [num_row,num_col] = size(K_VP);
+        fprintf(file_name,'K_gain: %d row(s), %d column(s)\n',num_row,num_col);
+        for row = 1:num_row
+            for col = 1:num_col
+                string = char(K_VP(row,col));
+                fprintf(file_name,'K_gain(%d,%d) = %s;\n',row,col,string);
+            end
+        end
+        fprintf(file_name,'\n');
+    end
+
+    if exist('OH_MAG','var')
+        fprintf(file_name,'OH_MAG: %d row(s), %d column(s)\n',numel(OH_MAG),1);
+        for row = 1:numel(OH_MAG)
+            string = char(OH_MAG(row,1));
+            fprintf(file_name,'OH_MAG(%d) = %s;\n',row,string);
+        end
+        fprintf(file_name,'\n');
+    end
+
+    %%mag X
+    if exist('H_MAG','var')
+        [~,num_col] = size(H_MAG);
+        fprintf(file_name,'H_MAG: %d row(s), %d column(s)\n',1,num_col);
+        for col = 1:num_col
+            string = char(H_MAG(1,col));
+            fprintf(file_name,'H_MAG(%d) = %s;\n',col,string);
+        end
+        fprintf(file_name,'\n');
+    end
+    
+    if exist('OK_MX','var')
+        fprintf(file_name,'OK_MX: %d row(s), %d column(s)\n',numel(OK_MX),1);
+        for row = 1:numel(OK_MX)
+            string = char(OK_MX(row,1));
+            fprintf(file_name,'OK_MX(%d) = %s;\n',row,string);
+        end
+        fprintf(file_name,'\n');
+    end
+
+    if exist('K_MX','var')
+        [num_row,~] = size(K_MX);
+        fprintf(file_name,'K_gain: %d row(s), %d column(s)\n',numel(K_MX),1);
+        for row = 1:num_row
+            string = char(K_MX(row,1));
+            fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
+        end
+        fprintf(file_name,'\n');
+    end
+
+    %%mag Y
+    if exist('H_MAG','var')
+        [~,num_col] = size(H_MAG);
+        fprintf(file_name,'H_MAG: %d row(s), %d column(s)\n',1,num_col);
+        for col = 1:num_col
+            string = char(H_MAG(2,col));
+            fprintf(file_name,'H_MAG(%d) = %s;\n',col,string);
+        end
+        fprintf(file_name,'\n');
+    end
+    
+    if exist('OK_MY','var')
+        fprintf(file_name,'OK_MY: %d row(s), %d column(s)\n',numel(OK_MY),1);
+        for row = 1:numel(OK_MY)
+            string = char(OK_MY(row,1));
+            fprintf(file_name,'OK_MY(%d) = %s;\n',row,string);
+        end
+        fprintf(file_name,'\n');
+    end
+
+    if exist('K_MY','var')
+        [num_row,~] = size(K_MY);
+        fprintf(file_name,'K_gain: %d row(s), %d column(s)\n',numel(K_MY),1);
+        for row = 1:num_row
+            string = char(K_MY(row,1));
+            fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
+        end
+        fprintf(file_name,'\n');
+    end
+
+    %%mag Z
+    if exist('H_MAG','var')
+        [~,num_col] = size(H_MAG);
+        fprintf(file_name,'H_MAG: %d row(s), %d column(s)\n',1,num_col);
+        for col = 1:num_col
+            string = char(H_MAG(3,col));
+            fprintf(file_name,'H_MAG(%d) = %s;\n',col,string);
+        end
+        fprintf(file_name,'\n');
+    end
+    
+    if exist('OK_MZ','var')
+        fprintf(file_name,'OK_MZ: %d row(s), %d column(s)\n',numel(OK_MZ),1);
+        for row = 1:numel(OK_MZ)
+            string = char(OK_MZ(row,1));
+            fprintf(file_name,'OK_MZ(%d) = %s;\n',row,string);
+        end
+        fprintf(file_name,'\n');
+    end
+
+    if exist('K_MZ','var')
+        [num_row,~] = size(K_MZ);
+        fprintf(file_name,'K_gain: %d row(s), %d column(s)\n',numel(K_MZ),1);
+        for row = 1:num_row
+            string = char(K_MZ(row,1));
+            fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
+        end
+        fprintf(file_name,'\n');
+    end
+
+
+
+
+
+
+
+    fclose(file_name);
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
