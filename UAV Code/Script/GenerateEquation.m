@@ -8,10 +8,10 @@ syms pn pe pd 'real' %position in NED
 syms da_bias_x da_bias_y da_bias_z 'real' %delta angle bias in XYZ - rad
 syms dv_bias_x dv_bias_y dv_bias_z 'real' %delta velocity bias in XYZ - m/s
 syms magn mage magd 'real' %earth magnetic field in NED - milligauss
-syms magx magy magz 'real' %body magnetic field in xyz - milligauss
+syms mag_bias_x mag_bias_y mag_bias_z 'real' %body magnetic field in xyz - milligauss
 
-state_vector = [q1;q2;q3;q4;vn;ve;vd;pn;pe;pd;da_bias_x;da_bias_y;da_bias_z;dv_bias_x;dv_bias_y;dv_bias_z;magn;mage;magd;magx;magy;magz];
-nstate=numel(stateVector);
+state_vector = [q1;q2;q3;q4;vn;ve;vd;pn;pe;pd;da_bias_x;da_bias_y;da_bias_z;dv_bias_x;dv_bias_y;dv_bias_z;magn;mage;magd;mag_bias_x;mag_bias_y;mag_bias_z];
+nstate = numel(stateVector);
 
 syms da_measurement_x da_measurement_y da_measurement_z 'real' %delta angle measurement in XYZ - rad
 syms dv_measurement_x dv_measurement_y dv_measurement_z 'real' %delta velocity measurement in XYZ - m/s
@@ -27,7 +27,7 @@ da_bias = [da_bias_x;da_bias_y;da_bias_z];
 dv_bias = [dv_bias_x;dv_bias_y;dv_bias_z];
 
 da_measurement = [da_measurement_x,da_measurement_y,da_measurement_z];
-dv_measurement = [dv_measurement_x,dv_measurement_y,dv_measurement_z]
+dv_measurement = [dv_measurement_x,dv_measurement_y,dv_measurement_z];
 
 tbn = Quat2Tbn([q1,q2,q3,q4]);
 
@@ -68,17 +68,17 @@ magn_new = magn;
 mage_new = mage;
 magd_new = magd;
 
-magx_new = magx;
-magy_new = magy;
-magz_new = magz;
+mag_bias_x_new = mag_bias_x;
+mag_bias_y_new = mag_bias_y;
+mag_bias_z_new = mag_bias_z;
 
-process_equation = [quat_new;v_new;p_new;da_bias_new,dv_bias_new;magn_new;mage_new;magd_new;magx_new;magy_new;magz_new;];
+process_equation = [quat_new;v_new;p_new;da_bias_new,dv_bias_new;magn_new;mage_new;magd_new;mag_bias_x_new;mag_bias_y_new;mag_bias_z_new;];
 
 %%generate equations
 
 %derive the state transition matrix
 F = jacobian(process_equation,state_vector);
-[F,OF]=OptimiseAlgebra(F,'OF');
+[F,OF] = OptimiseAlgebra(F,'OF');
 
 %Define the control (disturbance) vector. Error growth in the inertial
 %solution is assumed to be driven by 'noise' in the delta angles and
@@ -88,7 +88,7 @@ dist_vector = [da,dv];
 
 %derive the control(disturbance) influence matrix
 G = jacobian(process_equation,dist_vector);
-[G,OG]=OptimiseAlgebra(G,'OG');
+[G,OG] = OptimiseAlgebra(G,'OG');
 
 %derive the state error matrix
 %Note - this derivation of the covariance update equations does not include
@@ -97,7 +97,7 @@ G = jacobian(process_equation,dist_vector);
 %covariance matrix
 noise = diag([daxcov daycov dazcov dvxcov dvycov dvzcov]);
 Q = G*imuNoise*transpose(G);
-[Q,OQ]=OptimiseAlgebra(Q,'OQ');
+[Q,OQ] = OptimiseAlgebra(Q,'OQ');
 
 %define a symbolic covariance matrix using strings to represent 
 %'_lp_' to represent '( '
@@ -112,29 +112,54 @@ for rowIndex = 1:nstate
 end
 
 PP = F*P*transpose(F) + Q;
-[PP,SPP]=OptimiseAlgebra(PP,'SPP');
+[PP,OPP] = OptimiseAlgebra(PP,'OPP');
 
 %%derive equations for sequential fusion of velocity and position measurements
 
-H_VN= jacobian(vn,state_vector);
+H_VN = jacobian(vn,state_vector);
 K_VN = (P*transpose(H_VN))/(H_VN*P*transpose(H_VN) + rvn);
 
-H_VE= jacobian(ve,state_vector);
+H_VE = jacobian(ve,state_vector);
 K_VE = (P*transpose(H_VE))/(H_VE*P*transpose(H_VE) + rve);
 
-H_VD= jacobian(vd,state_vector);
+H_VD = jacobian(vd,state_vector);
 K_VD = (P*transpose(H_VD))/(H_VD*P*transpose(H_VD) + rvd);
 
-H_PN= jacobian(pn,state_vector);
+H_PN = jacobian(pn,state_vector);
 K_PN = (P*transpose(H_PN))/(H_PN*P*transpose(H_PN) + rpn);
 
-H_PE= jacobian(pe,state_vector);
+H_PE = jacobian(pe,state_vector);
 K_PE = (P*transpose(H_PE))/(H_PE*P*transpose(H_PE) + rpe);
 
-H_PD= jacobian(pd,state_vector);
+H_PD = jacobian(pd,state_vector);
 K_PD = (P*transpose(H_PD))/(H_PD*P*transpose(H_PD) + rpd);
 
-%--------------------------195
+% combine into a single H and K matrix (note these matrices cannot be used
+% for a single step fusion, so each row|column mst be used in a separate
+% fusion step
+H_VP  = [H_VN;H_VE;H_VD;H_PN;H_PE;H_PD];
+clear    H_VN H_VE H_VD H_PN H_PE H_PD;
+K_VP = [K_VN,K_VE,K_VD,K_PN,K_PE,K_PD];
+clear   K_VN K_VE K_VD K_PN K_PE K_PD;
+[K_VP,OK_VP] = OptimiseAlgebra(K_VP,'OK_VP');
+
+%% derive equations for fusion of magnetic field measurement
+mag_measurement = transpose(tbn)*[magn;mage;magd] + [mag_bias_x;mag_bias_y;mag_bias_z]; % predicted measurement
+H_MAG = jacobian(mag_measurement,state_vector); % measurement Jacobian
+[H_MAG,OH_MAG] = OptimiseAlgebra(H_MAG,'OH_MAG');
+
+K_MX = (P*transpose(H_MAG(1,:)))/(H_MAG(1,:)*P*transpose(H_MAG(1,:)) + rmag); % Kalman gain vector
+[K_MX,OK_MX]=OptimiseAlgebra(K_MX,'OK_MX');
+K_MY = (P*transpose(H_MAG(2,:)))/(H_MAG(2,:)*P*transpose(H_MAG(2,:)) + rmag); % Kalman gain vector
+[K_MY,OK_MY]=OptimiseAlgebra(K_MY,'OK_MY');
+K_MZ = (P*transpose(H_MAG(3,:)))/(H_MAG(3,:)*P*transpose(H_MAG(3,:)) + rmag); % Kalman gain vector
+[K_MZ,OK_MZ]=OptimiseAlgebra(K_MZ,'OK_MZ');
+
+file_name = 'ScriptOutput.mat';
+save(file_name);
+
+
+
 
 
 
