@@ -13,16 +13,19 @@ syms mag_bias_x mag_bias_y mag_bias_z 'real' %body magnetic field in xyz - milli
 state_vector = [q1;q2;q3;q4;vn;ve;vd;pn;pe;pd;da_bias_x;da_bias_y;da_bias_z;dv_bias_x;dv_bias_y;dv_bias_z;magn;mage;magd;mag_bias_x;mag_bias_y;mag_bias_z];
 nstate = numel(stateVector);
 
-syms omega_x omega_y omega_z 'real' %omega measurement in XYZ - rad
-syms acc_x acc_y acc_z 'real' %acc measurement in XYZ - m/s^2
-syms da_prev_x da_prev_y da_prev_z %previous omega measurement in XYZ - rad
-syms dv_prev_x dv_prev_y dv_prev_z %previous delta velocity measurement in XYZ - m/s
-syms da_noise_x da_noise_y da_noise_z %delta angle noise - rad
-syms dv_noise_x dv_noise_y dv_noise_z %delta velocity noise - m/s
+syms da_x da_y da_z 'real' %delta angle measurement in XYZ - rad
+syms dv_x dv_y dv_z 'real' %delta velocity measurement in XYZ - m/s^2
+syms da_prev_x da_prev_y da_prev_z 'real' %previous delta angle measurement in XYZ - rad
+syms dv_prev_x dv_prev_y dv_prev_z 'real' %previous delta velocity measurement in XYZ - m/s
+syms da_noise_x da_noise_y da_noise_z 'real' %delta angle noise - rad
+syms dv_noise_x dv_noise_y dv_noise_z 'real' %delta velocity noise - m/s
+syms da_bias_noise_x da_bias_noise_y da_bias_noise_z 'real' %delta angle bias noise - rad
+syms dv_bias_noise_x dv_bias_noise_y dv_bias_noise_z 'real' %delta angle bias noise - rad
 syms dt 'real' %measurement time step - s
 syms gn ge gd 'real' %NED gravity - m/sec^2
 syms omn ome omd 'real'; %earth rotation vector in local NED axes - rad/sec
-syms daxcov daycov dazcov dvxcov dvycov dvzcov 'real'; %delta angle and delta velocity measurement variances
+syms da_cov_x da_cov_y da_cov_z dv_cov_x dv_cov_y dv_cov_z 'real'; %delta angle and delta velocity measurement variances
+syms da_bias_cov_x da_bias_cov_y da_bias_cov_z dv_bias_cov_x dv_bias_cov_y dv_bias_cov_z 'real'; %delta angle and delta velocity measurement variances
 syms rvn rve rvd 'real' %variances for NED velocity measurements - (m/s)^2
 syms rpn rpe rpd 'real' %variances for NED position measurements - m^2
 syms rmag 'real' %variance for magnetic flux measurements - milligauss^2
@@ -36,9 +39,11 @@ dv_bias = [dv_bias_x;dv_bias_y;dv_bias_z];
 
 da_noise = [da_noise_x;da_noise_y;da_noise_z];
 dv_noise = [dv_noise_x;dv_noise_y;dv_noise_z];
+da_bias_noise = [da_bias_noise_x,da_bias_noise_y,da_bias_noise_z];
+dv_bias_noise = [dv_bias_noise_x,dv_bias_noise_y,dv_bias_noise_z];
 
-da_measurement = [omega_x;omega_y;omega_z]*dt;
-dv_measurement = [acc_x;acc_y;acc_z]*dt;
+da_measurement = [da_x;da_y;da_z];
+dv_measurement = [dv_x;dv_y;dv_z];
 
 da_prev = [da_prev_x;da_prev_y;da_prev_z];
 dv_prev = [dv_prev_x;dv_prev_y;dv_prev_z];
@@ -49,14 +54,14 @@ tbn = Quat2Tbn([q1,q2,q3,q4]);
 %negligible in terms of covariance growth compared to other efects for our
 %grade of sensor
 %deltaA = da - da_b + 1/12*cross(da_prev,da) - transpose(Cbn)*([omn; ome; omd])*dt;
-real_da = da_measurement - da_bias - da_noise;
+real_da = da_measurement - da_bias - da_noise + (1/12)*cross(da_prev,da_measurement);
 
 %define the bias corrected delta v
 %Ignore sculling as this effect is negligible in terms of covariance growth 
 %compared to other effects for our grade of sensor
 %deltaVelocity = dv - dv_b + 0.5*cross(da,dv) + 1/12*(cross(da_prev,dv) + cross(dv_prev,da));
 %rotation correction
-real_dv = dv_measurement - dv_bias - dv_noise + 0.5*cross(da_measurement,dv_measurement) + 1/12*(cross(da_prev,dv_measurement) + cross(dv_prev,da_measurement));
+real_dv = dv_measurement - dv_bias - dv_noise + 0.5*cross(da_measurement,dv_measurement) + (1/12)*(cross(da_prev,dv_measurement) + cross(dv_prev,da_measurement));
 
 quat = [q0;q1;q2;q3];
 
@@ -76,8 +81,8 @@ v_new = [vn;ve;vd] + [gn;ge;gd]*dt + tbn*real_dv;
 
 p_new = [pn;pe;pd] + [vn;ve;vd]*dt + 0.5*real_dv;
 
-da_bias_new = [da_bias_x;da_bias_y;da_bias_z];
-dv_bias_new = [dv_bias_x;dv_bias_y;dv_bias_z];
+da_bias_new = [da_bias_x;da_bias_y;da_bias_z] - da_bias_noise;
+dv_bias_new = [dv_bias_x;dv_bias_y;dv_bias_z] - dv_bias_noise;
 
 magn_new = magn;
 mage_new = mage;
@@ -99,7 +104,7 @@ F = jacobian(process_equation,state_vector);
 %solution is assumed to be driven by 'noise' in the delta angles and
 %velocities, after bias effects have been removed. This is OK becasue we
 %have sensor bias accounted for in the state equations.
-dist_vector = [da_noise,dv_noise];
+dist_vector = [da_noise;dv_noise];
 
 %derive the control(disturbance) influence matrix
 G = jacobian(process_equation,dist_vector);
@@ -110,7 +115,7 @@ G = jacobian(process_equation,dist_vector);
 %any general state noise - this will be added at the implementation stage
 %by adding an approriately scaled diagonal process noise matrix to the 
 %covariance matrix
-noise = diag([daxcov daycov dazcov dvxcov dvycov dvzcov]);
+noise = diag([da_cov_x da_cov_y da_cov_z dv_cov_x dv_cov_y dv_cov_z  da_bias_cov_x da_bias_cov_y da_bias_cov_z dv_bias_cov_x dv_bias_cov_y dv_bias_cov_z]);
 Q = G*noise*transpose(G);
 [Q,OQ] = OptimiseAlgebra(Q,'OQ');
 
@@ -195,7 +200,7 @@ file_name = 'ScriptOutput.mat';
 save(file_name);
 
 OutputFormater(nstate);
-
+ConvertToC(nstate);
 
 
 
