@@ -13,23 +13,35 @@ syms mag_bias_x mag_bias_y mag_bias_z 'real' %body magnetic field in xyz - milli
 state_vector = [q1;q2;q3;q4;vn;ve;vd;pn;pe;pd;da_bias_x;da_bias_y;da_bias_z;dv_bias_x;dv_bias_y;dv_bias_z;magn;mage;magd;mag_bias_x;mag_bias_y;mag_bias_z];
 nstate = numel(stateVector);
 
-syms acc_r_x acc_r_y acc_r_z 'real' %acc postion in XYZ
-syms omega_x omega_y omega_z 'real' %delta angle measurement in XYZ - rad
+syms omega_x omega_y omega_z 'real' %omega measurement in XYZ - rad
 syms acc_x acc_y acc_z 'real' %acc measurement in XYZ - m/s^2
+syms da_prev_x da_prev_y da_prev_z %previous omega measurement in XYZ - rad
+syms dv_prev_x dv_prev_y dv_prev_z %previous delta velocity measurement in XYZ - m/s
+syms da_noise_x da_noise_y da_noise_z %delta angle noise - rad
+syms dv_noise_x dv_noise_y dv_noise_z %delta velocity noise - m/s
 syms dt 'real' %measurement time step - s
 syms gn ge gd 'real' %NED gravity - m/sec^2
 syms omn ome omd 'real'; %earth rotation vector in local NED axes - rad/sec
 syms daxcov daycov dazcov dvxcov dvycov dvzcov 'real'; %delta angle and delta velocity measurement variances
-syms rvn rve rvd 'real' %variances for NED velocity measurements - (m/sec)^2
+syms rvn rve rvd 'real' %variances for NED velocity measurements - (m/s)^2
 syms rpn rpe rpd 'real' %variances for NED position measurements - m^2
 syms rmag 'real' %variance for magnetic flux measurements - milligauss^2
 syms rdec 'real' %variance for magnetic declination measurements - rad^2
+syms ryaw 'real' %variance for yaw measurements - rad^2
+syms rgpsv 'real' %variances for GPS NED velocity measurements - (m/s)^2
+syms rgpsp 'real' %variances for GPS NED position measurements - m^2
 
 da_bias = [da_bias_x;da_bias_y;da_bias_z];
 dv_bias = [dv_bias_x;dv_bias_y;dv_bias_z];
 
-da_measurement = [omega_x,omega_y,omega_z]*dt;
-acc_measurement = [acc_x,acc_y,acc_z];
+da_noise = [da_noise_x;da_noise_y;da_noise_z];
+dv_noise = [dv_noise_x;dv_noise_y;dv_noise_z];
+
+da_measurement = [omega_x;omega_y;omega_z]*dt;
+dv_measurement = [acc_x;acc_y;acc_z]*dt;
+
+da_prev = [da_prev_x;da_prev_y;da_prev_z];
+dv_prev = [dv_prev_x;dv_prev_y;dv_prev_z];
 
 tbn = Quat2Tbn([q1,q2,q3,q4]);
 
@@ -37,13 +49,14 @@ tbn = Quat2Tbn([q1,q2,q3,q4]);
 %negligible in terms of covariance growth compared to other efects for our
 %grade of sensor
 %deltaA = da - da_b + 1/12*cross(da_prev,da) - transpose(Cbn)*([omn; ome; omd])*dt;
-da = da_measurement - da_bias;
+real_da = da_measurement - da_bias - da_noise;
 
 %define the bias corrected delta v
 %Ignore sculling as this effect is negligible in terms of covariance growth 
 %compared to other effects for our grade of sensor
 %deltaVelocity = dv - dv_b + 0.5*cross(da,dv) + 1/12*(cross(da_prev,dv) + cross(dv_prev,da));
-dv = acc_measurement*dt - dv_bias;
+%rotation correction
+real_dv = dv_measurement - dv_bias - dv_noise + 0.5*cross(da_measurement,dv_measurement) + 1/12*(cross(da_prev,dv_measurement) + cross(dv_prev,da_measurement));
 
 quat = [q0;q1;q2;q3];
 
@@ -51,18 +64,17 @@ quat = [q0;q1;q2;q3];
 %use a first order expansion of rotation to calculate the quaternion increment
 %acceptable for propagation of covariances
 dquat = [1;
-    0.5*da(1);
-    0.5*da(2);
-    0.5*da(3);
+    0.5*real_da(1);
+    0.5*real_da(2);
+    0.5*real_da(3);
     ];
 quat_new = QuatMult(quat,dquat);
 
 %define the velocity update equations
 %vNew = [vn;ve;vd] + [gn;ge;gd]*dt + Tbn*deltaVelocity - cross(2*[omn; ome; omd],[vn;ve;vd])*dt;
-%rotation correction
-v_new = [vn;ve;vd] + [gn;ge;gd]*dt + tbn*dv - cross([omega_x,omega_y,omega_z],cross([omega_x,omega_y,omega_z],[acc_r_x,acc_r_y,acc_r_z]))*dt;
+v_new = [vn;ve;vd] + [gn;ge;gd]*dt + tbn*real_dv;
 
-p_new = [pn;pe;pd] + [vn;ve;vd]*dt;
+p_new = [pn;pe;pd] + [vn;ve;vd]*dt + 0.5*real_dv;
 
 da_bias_new = [da_bias_x;da_bias_y;da_bias_z];
 dv_bias_new = [dv_bias_x;dv_bias_y;dv_bias_z];
@@ -87,7 +99,7 @@ F = jacobian(process_equation,state_vector);
 %solution is assumed to be driven by 'noise' in the delta angles and
 %velocities, after bias effects have been removed. This is OK becasue we
 %have sensor bias accounted for in the state equations.
-dist_vector = [da,dv];
+dist_vector = [da_noise,dv_noise];
 
 %derive the control(disturbance) influence matrix
 G = jacobian(process_equation,dist_vector);
@@ -99,7 +111,7 @@ G = jacobian(process_equation,dist_vector);
 %by adding an approriately scaled diagonal process noise matrix to the 
 %covariance matrix
 noise = diag([daxcov daycov dazcov dvxcov dvycov dvzcov]);
-Q = G*imuNoise*transpose(G);
+Q = G*noise*transpose(G);
 [Q,OQ] = OptimiseAlgebra(Q,'OQ');
 
 %define a symbolic covariance matrix using strings to represent 
@@ -152,21 +164,32 @@ H_MAG = jacobian(mag_measurement,state_vector); % measurement Jacobian
 [H_MAG,OH_MAG] = OptimiseAlgebra(H_MAG,'OH_MAG');
 
 K_MX = (P*transpose(H_MAG(1,:)))/(H_MAG(1,:)*P*transpose(H_MAG(1,:)) + rmag); % Kalman gain vector
-[K_MX,OK_MX]=OptimiseAlgebra(K_MX,'OK_MX');
+[K_MX,OK_MX] = OptimiseAlgebra(K_MX,'OK_MX');
 K_MY = (P*transpose(H_MAG(2,:)))/(H_MAG(2,:)*P*transpose(H_MAG(2,:)) + rmag); % Kalman gain vector
-[K_MY,OK_MY]=OptimiseAlgebra(K_MY,'OK_MY');
+[K_MY,OK_MY] = OptimiseAlgebra(K_MY,'OK_MY');
 K_MZ = (P*transpose(H_MAG(3,:)))/(H_MAG(3,:)*P*transpose(H_MAG(3,:)) + rmag); % Kalman gain vector
-[K_MZ,OK_MZ]=OptimiseAlgebra(K_MZ,'OK_MZ');
+[K_MZ,OK_MZ] = OptimiseAlgebra(K_MZ,'OK_MZ');
 
 %%derive equations for fusion of magnetic declination measurement
 dec_measurement = atan(mage/magn);
 H_DEC = jacobian(dec_measurement,state_vector);
-H_DEC = simplify(H_DEC);
+[H_DEC,OH_DEC] = OptimiseAlgebra(H_DEC,'OH_DEC');
 K_DEC = (P*transpose(H_DEC))/(H_DEC*P*transpose(H_DEC) + rdec);
-K_DEC = simplify(K_DEC);
+[K_DEC,OK_DEC] = OptimiseAlgebra(K_DEC,'OK_DEC');
 
 %%derive equations for fusion of yaw (yaw321)
+yaw321_measurement = atan(tbn(2,1)/tbn(1,1));
+H_YAW321 = jacobian(yaw321_measurement,state_vector);
+H_YAW321 = simplify(H_YAW321);
+K_YAW321 = (P*transpose(H_YAW321))/(H_YAW321*P*transpose(H_YAW321) + ryaw);
+K_YAW321 = simplify(K_YAW321);
 
+%%derive equations for fusion of yaw (yaw312)
+yaw312_measurement = atan(-tbn(1,2)/tbn(2,2));
+H_YAW312 = jacobian(yaw312_measurement,state_vector);
+H_YAW312 = simplify(H_YAW312);
+K_YAW312 = (P*transpose(H_YAW312))/(H_YAW312*P*transpose(H_YAW312) + ryaw);
+K_YAW312 = simplify(K_YAW312);
 
 file_name = 'ScriptOutput.mat';
 save(file_name);

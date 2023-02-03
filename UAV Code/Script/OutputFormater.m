@@ -96,7 +96,9 @@ function OutputFormater(nstate)
         for row = 1:num_row
             for col = 1:num_col
                 string = char(H_VP(row,col));
-                fprintf(file_name,'H_VP(%d,%d) = %s;\n',row,col,string);
+                if ~strcmpi(string,'0')
+                    fprintf(file_name,'H_VP(%d,%d) = %s;\n',row,col,string);
+                end
             end
         end
         fprintf(file_name,'\n');
@@ -120,7 +122,9 @@ function OutputFormater(nstate)
         for row = 1:num_row
             for col = 1:num_col
                 string = char(K_VP(row,col));
-                fprintf(file_name,'K_gain(%d,%d) = %s;\n',row,col,string);
+                if ~strcmpi(string,'0')
+                    fprintf(file_name,'K_gain(%d,%d) = %s;\n',row,col,string);
+                end
             end
         end
         fprintf(file_name,'\n');
@@ -141,7 +145,9 @@ function OutputFormater(nstate)
         fprintf(file_name,'H_MAG: %d row(s), %d column(s)\n',1,num_col);
         for col = 1:num_col
             string = char(H_MAG(1,col));
-            fprintf(file_name,'H_MAG(%d) = %s;\n',col,string);
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'H_MAG(%d) = %s;\n',col,string);
+            end
         end
         fprintf(file_name,'\n');
     end
@@ -160,7 +166,9 @@ function OutputFormater(nstate)
         fprintf(file_name,'K_gain: %d row(s), %d column(s)\n',numel(K_MX),1);
         for row = 1:num_row
             string = char(K_MX(row,1));
-            fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
+            end
         end
         fprintf(file_name,'\n');
     end
@@ -171,7 +179,9 @@ function OutputFormater(nstate)
         fprintf(file_name,'H_MAG: %d row(s), %d column(s)\n',1,num_col);
         for col = 1:num_col
             string = char(H_MAG(2,col));
-            fprintf(file_name,'H_MAG(%d) = %s;\n',col,string);
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'H_MAG(%d) = %s;\n',col,string);
+            end
         end
         fprintf(file_name,'\n');
     end
@@ -190,7 +200,9 @@ function OutputFormater(nstate)
         fprintf(file_name,'K_gain: %d row(s), %d column(s)\n',numel(K_MY),1);
         for row = 1:num_row
             string = char(K_MY(row,1));
-            fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
+            end
         end
         fprintf(file_name,'\n');
     end
@@ -201,7 +213,9 @@ function OutputFormater(nstate)
         fprintf(file_name,'H_MAG: %d row(s), %d column(s)\n',1,num_col);
         for col = 1:num_col
             string = char(H_MAG(3,col));
-            fprintf(file_name,'H_MAG(%d) = %s;\n',col,string);
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'H_MAG(%d) = %s;\n',col,string);
+            end
         end
         fprintf(file_name,'\n');
     end
@@ -220,17 +234,103 @@ function OutputFormater(nstate)
         fprintf(file_name,'K_gain: %d row(s), %d column(s)\n',numel(K_MZ),1);
         for row = 1:num_row
             string = char(K_MZ(row,1));
-            fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
+            end
         end
         fprintf(file_name,'\n');
     end
 
+    %%mag declination
+    if exist('OH_DEC','var')
+        fprintf(file_name,'OH_DEC: %d row(s), %d column(s)\n',numel(OH_DEC),1);
+        for row = 1:numel(OH_DEC)
+            string = char(OH_DEC(row,1));
+            fprintf(file_name,'OH_DEC(%d) = %s;\n',row,string);
+        end
+        fprintf(file_name,'\n');
+    end
 
+    if exist('H_DEC','var')
+        [~,num_col] = size(H_DEC);
+        fprintf(file_name,'H_DEC: %d row(s), %d column(s)\n',1,num_col);
+        for col = 1:num_col
+            string = char(H_DEC(1,col));
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'H_DEC(%d) = %s;\n',col,string);
+            end
+        end
+        fprintf(file_name,'\n');
+    end
 
+    if exist('OK_DEC','var')
+        fprintf(file_name,'OK_DEC: %d row(s), %d column(s)\n',numel(OK_DEC),1);
+        for row = 1:numel(OK_DEC)
+            string = char(OK_DEC(row,1));
+            fprintf(file_name,'OK_DEC(%d) = %s;\n',row,string);
+        end
+        fprintf(file_name,'\n');
+    end
 
+    if exist('K_DEC','var')
+        [num_row,~] = size(K_DEC);
+        fprintf(file_name,'K_gain: %d row(s), %d column(s)\n',num_row,1);
+        for row = 1:num_row
+            string = char(K_DEC(row,1));
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
+            end
+        end
+        fprintf(file_name,'\n');
+    end
 
+    if exist('H_YAW321','var')
+        [~,num_col] = size(H_YAW321);
+        fprintf(file_name,'H_YAW321: %d row(s), %d column(s)\n',1,num_col);
+        for col = 1:num_col
+            string = char(H_YAW321(1,col));
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'H_YAW321(%d) = %s;\n',col,string);
+            end
+        end
+        fprintf(file_name,'\n');
+    end
 
+    if exist('K_YAW321','var')
+        [num_row,~] = size(YAW321);
+        fprintf(file_name,'K_gain: %d row(s), %d column(s)\n',num_row,1);
+        for row = 1:num_row
+            string = char(YAW321(row,1));
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
+            end
+        end
+        fprintf(file_name,'\n');
+    end
 
+    if exist('H_YAW312','var')
+        [~,num_col] = size(H_YAW312);
+        fprintf(file_name,'H_YAW312: %d row(s), %d column(s)\n',1,num_col);
+        for col = 1:num_col
+            string = char(H_YAW312(1,col));
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'H_YAW312(%d) = %s;\n',col,string);
+            end
+        end
+        fprintf(file_name,'\n');
+    end
+
+    if exist('K_YAW312','var')
+        [num_row,~] = size(YAW312);
+        fprintf(file_name,'K_gain: %d row(s), %d column(s)\n',num_row,1);
+        for row = 1:num_row
+            string = char(YAW312(row,1));
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
+            end
+        end
+        fprintf(file_name,'\n');
+    end
     fclose(file_name);
 end
 
