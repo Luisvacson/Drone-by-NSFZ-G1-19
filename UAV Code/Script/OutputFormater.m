@@ -332,8 +332,6 @@ function OutputFormater(nstate)
         fprintf(file_name,'\n');
     end
     fclose(file_name);
-end
-
 
 
 
