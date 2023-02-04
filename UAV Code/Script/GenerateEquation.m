@@ -200,7 +200,7 @@ file_name = 'ScriptOutput.mat';
 save(file_name);
 
 OutputFormater(nstate);
-ConvertToC(nstate);
+ConvertCode(nstate);
 
 
 

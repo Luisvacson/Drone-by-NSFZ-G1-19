@@ -1,15 +1,52 @@
-function ConvertToC(nstate)
-    %% Define file to read in
-    fileName = strcat('M_code',int2str(nstate),'.txt');
+function ConvertCode(nstate)
+    %% Format string for each line of text:
+    %   column1: text (%s)
+    % For more information, see the TEXTSCAN documentation.
+    formatSpec = '%s%[^\n\r]';
     delimiter = '';
+
+    %% Open the text file.
+    fileID = fopen('TextOutput.txt','r');
+
+    %% Read columns of data according to format string.
+    % This call is based on the structure of the file used to generate this
+    % code. If an error occurs for a different file, try regenerating the code
+    % from the Import Tool.
+    dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter,  'ReturnOnError', false);
+
+    %% Close the text file.
+    fclose(fileID);
+
+    %% Create output variable
+    SymbolicOutput = [dataArray{1:end-1}];
+
+    %% Clear temporary variables
+    clearvars filename delimiter formatSpec fileID dataArray ans;
+
+    %% replace brackets and commas
+    for lineIndex = 1:length(SymbolicOutput)
+        SymbolicOutput(lineIndex) = regexprep(SymbolicOutput(lineIndex), '_l_', '(');
+        SymbolicOutput(lineIndex) = regexprep(SymbolicOutput(lineIndex), '_c_', ',');
+        SymbolicOutput(lineIndex) = regexprep(SymbolicOutput(lineIndex), '_r_', ')');
+    end
+
+    %% Write to file
+    fid = fopen('MatlabCode.txt','wt');
+    for lineIndex = 1:length(SymbolicOutput)
+        fprintf(fid,char(SymbolicOutput(lineIndex)));
+        fprintf(fid,'\n');
+    end
+    fclose(fid);
+    clear all;
 
     %% Format string for each line of text:
     %   column1: text (%s)
     % For more information, see the TEXTSCAN documentation.
     formatSpec = '%s%[^\n\r]';
+    delimiter = '';
 
     %% Open the text file.
-    fileID = fopen(fileName,'r');
+    fileID = fopen('MatlabCode.txt','r');
 
     %% Read columns of data according to format string.
     % This call is based on the structure of the file used to generate this
@@ -164,14 +201,14 @@ function ConvertToC(nstate)
         end
     end
 
-    %% Replace Divisions
-    % Compiler looks after this type of optimisation for us
-    % for lineIndex = 1:length(SymbolicOutput)
-    %     strIn = char(SymbolicOutput(lineIndex));
-    %     strIn = regexprep(strIn,'\/2','\*0\.5');
-    %     strIn = regexprep(strIn,'\/4','\*0\.25');
-    %     SymbolicOutput(lineIndex) = cellstr(strIn);
-    % end
+    % Replace Divisions
+    %Compiler looks after this type of optimisation for us
+    for lineIndex = 1:length(SymbolicOutput)
+        strIn = char(SymbolicOutput(lineIndex));
+        strIn = regexprep(strIn,'\/2','\*0\.5');
+        strIn = regexprep(strIn,'\/4','\*0\.25');
+        SymbolicOutput(lineIndex) = cellstr(strIn);
+    end
 
     %% Convert declarations
     for lineIndex = 1:length(SymbolicOutput)
@@ -198,13 +235,12 @@ function ConvertToC(nstate)
     %% Change covariance matrix variable name to P
     for lineIndex = 1:length(SymbolicOutput)
         strIn = char(SymbolicOutput(lineIndex));
-        strIn = regexprep(strIn,'OP\[','P[');
+        strIn = regexprep(strIn,'LP\[','P[');
         SymbolicOutput(lineIndex) = cellstr(strIn);
     end
 
     %% Write to file
-    fileName = strcat('C_code',int2str(nstate),'.txt');
-    fid = fopen(fileName,'wt');
+    fid = fopen('CPPCode.txt','wt');
     for lineIndex = 1:length(SymbolicOutput)
         fprintf(fid,char(SymbolicOutput(lineIndex)));
         fprintf(fid,'\n');
