@@ -200,4 +200,4 @@ file_name = 'ScriptOutput.mat';
 save(file_name);
 
 OutputFormater(nstate);
-ConvertCode(nstate);
+ConvertCode();

@@ -1,4 +1,4 @@
-function ConvertCode(nstate)
+function ConvertCode(~)
     %% Format string for each line of text:
     %   column1: text (%s)
     % For more information, see the TEXTSCAN documentation.
@@ -25,9 +25,9 @@ function ConvertCode(nstate)
 
     %% replace brackets and commas
     for lineIndex = 1:length(SymbolicOutput)
-        SymbolicOutput(lineIndex) = regexprep(SymbolicOutput(lineIndex), '_l_', '(');
+        SymbolicOutput(lineIndex) = regexprep(SymbolicOutput(lineIndex), '_lp_', '(');
         SymbolicOutput(lineIndex) = regexprep(SymbolicOutput(lineIndex), '_c_', ',');
-        SymbolicOutput(lineIndex) = regexprep(SymbolicOutput(lineIndex), '_r_', ')');
+        SymbolicOutput(lineIndex) = regexprep(SymbolicOutput(lineIndex), '_rp_', ')');
     end
 
     %% Write to file
@@ -219,7 +219,7 @@ function ConvertCode(nstate)
             index3 = regexp(str,'\]\[','once')-1;
             index4 = index3 + 3;
             index5 = max(regexp(str,'\]'))-1;
-            str1 = {'float '};
+            str1 = {'R_Float '};
             str2 = str(1:index1);
             str3 = '[';
             str4 = str(index2:index3);
