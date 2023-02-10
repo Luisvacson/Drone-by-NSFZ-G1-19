@@ -15,6 +15,8 @@ nstate = numel(state_vector);
 
 syms da_x da_y da_z 'real' %delta angle measurement in XYZ - rad
 syms dv_x dv_y dv_z 'real' %delta velocity measurement in XYZ - m/s^2
+syms da_prev_x da_prev_y da_prev_z 'real' %previous delta angle - rad
+syms dv_prev_x dv_prev_y dv_prev_z 'real' %previous delta velocity - m/s
 syms da_noise_x da_noise_y da_noise_z 'real' %delta angle noise - rad
 syms dv_noise_x dv_noise_y dv_noise_z 'real' %delta velocity noise - m/s
 syms mag_noise_n mag_noise_e mag_noise_d 'real' %mag noise - milligauss
@@ -29,7 +31,7 @@ syms mag_noise_cov_n mag_noise_cov_e mag_noise_cov_d 'real' %mag noise variances
 syms mag_bias_noise_cov_x mag_bias_noise_cov_y mag_bias_noise_cov_z 'real' %mag bias noise variances - milligauss^2
 syms rv_n rv_e rv_d 'real' %variances for NED velocity measurements - (m/s)^2
 syms rp_n rp_e rp_d 'real' %variances for NED position measurements - m^2
-syms rmag 'real' %variance for magnetic flux measurements - milligauss^2
+syms rmag_x rmag_y rmag_z 'real' %variance for magnetic flux measurements - milligauss^2
 syms rdec 'real' %variance for magnetic declination measurements - rad^2
 syms ryaw 'real' %variance for yaw measurements - rad^2
 syms rgpsv 'real' %variances for GPS NED velocity measurements - (m/s)^2
@@ -41,9 +43,9 @@ dv_bias = [dv_bias_x;dv_bias_y;dv_bias_z];
 da_noise = [da_noise_x;da_noise_y;da_noise_z];
 dv_noise = [dv_noise_x;dv_noise_y;dv_noise_z];
 mag_noise = [mag_noise_n;mag_noise_e;mag_noise_d];
-da_bias_noise = [da_bias_noise_x,da_bias_noise_y,da_bias_noise_z];
-dv_bias_noise = [dv_bias_noise_x,dv_bias_noise_y,dv_bias_noise_z];
-mag_bias_noise = [mag_bias_noise_n;mag_bias_noise_e;mag_bias_noise_d];
+da_bias_noise = [da_bias_noise_x;da_bias_noise_y;da_bias_noise_z];
+dv_bias_noise = [dv_bias_noise_x;dv_bias_noise_y;dv_bias_noise_z];
+mag_bias_noise = [mag_bias_noise_x;mag_bias_noise_y;mag_bias_noise_z];
 
 da_measurement = [da_x;da_y;da_z];
 dv_measurement = [dv_x;dv_y;dv_z];
@@ -57,14 +59,14 @@ tbn = Quat2Tbn([q1,q2,q3,q4]);
 %negligible in terms of covariance growth compared to other efects for our
 %grade of sensor
 %deltaA = da - da_b + 1/12*cross(da_prev,da) - transpose(Cbn)*([omn; ome; omd])*dt;
-real_da = da_measurement - da_bias - da_noise;
+real_da = da_measurement - da_bias - da_noise + (1/12)*cross(da_prev,da_measurement - da_bias - da_noise);
 
 %define the bias corrected delta v
 %Ignore sculling as this effect is negligible in terms of covariance growth 
 %compared to other effects for our grade of sensor
 %deltaVelocity = dv - dv_b + 0.5*cross(da,dv) + 1/12*(cross(da_prev,dv) + cross(dv_prev,da));
 %rotation correction
-real_dv = dv_measurement - dv_bias - dv_noise;
+real_dv = dv_measurement - dv_bias - dv_noise + 0.5*cross(real_da,dv_measurement - dv_bias - dv_noise) + (1/12)*(cross(da_prev,dv_measurement - dv_bias - dv_noise) + cross(dv_prev,real_da));
 
 quat = [q0;q1;q2;q3];
 
@@ -87,20 +89,21 @@ p_new = [p_n;p_e;p_d] + [v_n;v_e;v_d]*dt + 0.5*real_dv*dt;
 da_bias_new = [da_bias_x;da_bias_y;da_bias_z] + da_bias_noise;
 dv_bias_new = [dv_bias_x;dv_bias_y;dv_bias_z] + dv_bias_noise;
 
-magn_new = mag_n + mag_noise_n;
-mage_new = mag_e + mag_noise_e;
-magd_new = mag_d + mag_noise_d;
+mag_n_new = mag_n + mag_noise_n;
+mag_e_new = mag_e + mag_noise_e;
+mag_d_new = mag_d + mag_noise_d;
 
 mag_bias_x_new = mag_bias_x + mag_bias_noise_x;
 mag_bias_y_new = mag_bias_y + mag_bias_noise_y;
 mag_bias_z_new = mag_bias_z + mag_bias_noise_z;
 
-process_equation = [quat_new;v_new;p_new;da_bias_new,dv_bias_new;magn_new;mage_new;magd_new;mag_bias_x_new;mag_bias_y_new;mag_bias_z_new;];
+process_equation = [quat_new;v_new;p_new;da_bias_new,dv_bias_new;mag_n_new;mag_e_new;mag_d_new;mag_bias_x_new;mag_bias_y_new;mag_bias_z_new;];
 
 %%generate equations
 
 %derive the state transition matrix
 F = jacobian(process_equation,state_vector);
+F = subs(F,{da_noise_x,da_noise_y,da_noise_z,dv_noise_x,dv_noise_y,dv_noise_z,mag_noise_n,mag_noise_e,mag_noise_d,da_bias_noise_x,da_bias_noise_y,da_bias_noise_z,dv_bias_noise_x,dv_bias_noise_y,dv_bias_noise_z,mag_bias_noise_x,mag_bias_noise_y,mag_bias_noise_z},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
 [F,OF] = OptimiseAlgebra(F,'OF');
 
 %Define the control (disturbance) vector. Error growth in the inertial
@@ -111,6 +114,7 @@ dist_vector = [da_noise;dv_noise;da_bias_noise;dv_bias_noise;mag_noise;mag_bias_
 
 %derive the control(disturbance) influence matrix
 G = jacobian(process_equation,dist_vector);
+G = subs(G,{da_noise_x,da_noise_y,da_noise_z,dv_noise_x,dv_noise_y,dv_noise_z,mag_noise_n,mag_noise_e,mag_noise_d,da_bias_noise_x,da_bias_noise_y,da_bias_noise_z,dv_bias_noise_x,dv_bias_noise_y,dv_bias_noise_z,mag_bias_noise_x,mag_bias_noise_y,mag_bias_noise_z},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
 [G,OG] = OptimiseAlgebra(G,'OG');
 
 %derive the state error matrix
@@ -171,11 +175,11 @@ mag_measurement = transpose(tbn)*[mag_n;mag_e;mag_d] + [mag_bias_x;mag_bias_y;ma
 H_MAG = jacobian(mag_measurement,state_vector); % measurement Jacobian
 [H_MAG,OH_MAG] = OptimiseAlgebra(H_MAG,'OH_MAG');
 
-K_MX = (P*transpose(H_MAG(1,:)))/(H_MAG(1,:)*P*transpose(H_MAG(1,:)) + rmag); % Kalman gain vector
+K_MX = (P*transpose(H_MAG(1,:)))/(H_MAG(1,:)*P*transpose(H_MAG(1,:)) + rmag_x); % Kalman gain vector
 [K_MX,OK_MX] = OptimiseAlgebra(K_MX,'OK_MX');
-K_MY = (P*transpose(H_MAG(2,:)))/(H_MAG(2,:)*P*transpose(H_MAG(2,:)) + rmag); % Kalman gain vector
+K_MY = (P*transpose(H_MAG(2,:)))/(H_MAG(2,:)*P*transpose(H_MAG(2,:)) + rmag_y); % Kalman gain vector
 [K_MY,OK_MY] = OptimiseAlgebra(K_MY,'OK_MY');
-K_MZ = (P*transpose(H_MAG(3,:)))/(H_MAG(3,:)*P*transpose(H_MAG(3,:)) + rmag); % Kalman gain vector
+K_MZ = (P*transpose(H_MAG(3,:)))/(H_MAG(3,:)*P*transpose(H_MAG(3,:)) + rmag_z); % Kalman gain vector
 [K_MZ,OK_MZ] = OptimiseAlgebra(K_MZ,'OK_MZ');
 
 %%derive equations for fusion of magnetic declination measurement
