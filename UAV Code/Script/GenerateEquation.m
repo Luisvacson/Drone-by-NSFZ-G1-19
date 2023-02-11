@@ -53,7 +53,7 @@ dv_measurement = [dv_x;dv_y;dv_z];
 da_prev = [da_prev_x;da_prev_y;da_prev_z];
 dv_prev = [dv_prev_x;dv_prev_y;dv_prev_z];
 
-tbn = Quat2Tbn([q1,q2,q3,q4]);
+tbn = Quat_to_Tbn([q1,q2,q3,q4]);
 
 %Ignore coning compensation and earths rotation as these effect are
 %negligible in terms of covariance growth compared to other efects for our
@@ -68,7 +68,7 @@ real_da = da_measurement - da_bias - da_noise + (1/12)*cross(da_prev,da_measurem
 %rotation correction
 real_dv = dv_measurement - dv_bias - dv_noise + 0.5*cross(real_da,dv_measurement - dv_bias - dv_noise) + (1/12)*(cross(da_prev,dv_measurement - dv_bias - dv_noise) + cross(dv_prev,real_da));
 
-quat = [q0;q1;q2;q3];
+quat = [q1;q2;q3;q4];
 
 %define the attitude update equations
 %use a first order expansion of rotation to calculate the quaternion increment
@@ -97,7 +97,7 @@ mag_bias_x_new = mag_bias_x + mag_bias_noise_x;
 mag_bias_y_new = mag_bias_y + mag_bias_noise_y;
 mag_bias_z_new = mag_bias_z + mag_bias_noise_z;
 
-process_equation = [quat_new;v_new;p_new;da_bias_new,dv_bias_new;mag_n_new;mag_e_new;mag_d_new;mag_bias_x_new;mag_bias_y_new;mag_bias_z_new;];
+process_equation = [quat_new;v_new;p_new;da_bias_new;dv_bias_new;mag_n_new;mag_e_new;mag_d_new;mag_bias_x_new;mag_bias_y_new;mag_bias_z_new];
 
 %%generate equations
 
