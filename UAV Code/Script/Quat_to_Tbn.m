@@ -1,4 +1,4 @@
-function Tbn = Quat2Tbn(quat)
+function Tbn = Quat_to_Tbn(quat)
 
     % Convert from quaternions defining the flight vehicles rotation to
     % the direction cosine matrix defining the rotation from  body to navigation

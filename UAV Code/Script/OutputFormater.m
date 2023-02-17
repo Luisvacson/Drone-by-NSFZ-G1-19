@@ -106,13 +106,10 @@ function OutputFormater(nstate)
     end
 
     if exist('OK_VP','var')
-        [num_row,num_col] = size(OK_VP);
-        fprintf(file_name,'OK_VP = zeros(%d,%d);\n',num_row,num_col);
-        for row = 1:num_row
-            for col = 1:num_col
-                string = char(OK_VP(row,col));
-                fprintf(file_name,'OK_VP(%d,%d) = %s;\n',row,col,string);
-            end
+        fprintf(file_name,'OK_VP = zeros(%d,%d);\n',numel(OK_VP),1);
+        for row = 1:numel(OK_VP)
+            string = char(OK_VP(row,1));
+            fprintf(file_name,'OK_VP(%d) = %s;\n',row,string);
         end
         fprintf(file_name,'\n');
     end
@@ -322,16 +319,51 @@ function OutputFormater(nstate)
     end
 
     if exist('K_YAW312','var')
-        [num_row,~] = size(YAW312);
+        [num_row,~] = size(K_YAW312);
         fprintf(file_name,'K_gain = zeros(%d,%d);\n',num_row,1);
         for row = 1:num_row
-            string = char(YAW312(row,1));
+            string = char(K_YAW312(row,1));
             if ~strcmpi(string,'0')
                 fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
             end
         end
         fprintf(file_name,'\n');
     end
+
+    %%baro
+    if exist('H_BARO','var')
+        [~,num_col] = size(H_BARO);
+        fprintf(file_name,'H_BARO = zeros(%d,%d);\n',1,num_col);
+        for col = 1:num_col
+            string = char(H_BARO(1,col));
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'H_BARO(%d) = %s;\n',col,string);
+            end
+        end
+        fprintf(file_name,'\n');
+    end
+
+    if exist('OK_BARO','var')
+        fprintf(file_name,'OK_BARO = zeros(%d,%d);\n',numel(OK_BARO),1);
+        for row = 1:numel(OK_BARO)
+            string = char(OK_BARO(row,1));
+            fprintf(file_name,'OK_BARO(%d) = %s;\n',row,string);
+        end
+        fprintf(file_name,'\n');
+    end
+
+    if exist('K_BARO','var')
+        [num_row,~] = size(K_BARO);
+        fprintf(file_name,'K_gain = zeros(%d,%d);\n',num_row,1);
+        for row = 1:num_row
+            string = char(K_BARO(row,1));
+            if ~strcmpi(string,'0')
+                fprintf(file_name,'K_gain(%d) = %s;\n',row,string);
+            end
+        end
+        fprintf(file_name,'\n');
+    end
+
     fclose(file_name);
 
 

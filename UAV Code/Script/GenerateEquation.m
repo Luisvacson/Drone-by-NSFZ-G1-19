@@ -1,78 +1,71 @@
 clear all;
 
+disp('Derivation start');
+
 %%state vector
 
 syms q1 q2 q3 q4 'real' %state quaternion
 syms v_n v_e v_d 'real' %velocity in NED
 syms p_n p_e p_d 'real' %position in NED
-syms da_bias_x da_bias_y da_bias_z 'real' %delta angle bias in XYZ - rad
-syms dv_bias_x dv_bias_y dv_bias_z 'real' %delta velocity bias in XYZ - m/s
+syms omega_bias_x omega_bias_y omega_bias_z 'real' %omega bias in XYZ - rad/s
+syms acc_bias_x acc_bias_y acc_bias_z 'real' %acc bias in XYZ - m/s^2
 syms mag_n mag_e mag_d 'real' %earth magnetic field in NED - milligauss
 syms mag_bias_x mag_bias_y mag_bias_z 'real' %body magnetic field in xyz - milligauss
+syms baro_bias 'real'%baro bias - m
 
-state_vector = [q1;q2;q3;q4;v_n;v_e;v_d;p_n;p_e;p_d;da_bias_x;da_bias_y;da_bias_z;dv_bias_x;dv_bias_y;dv_bias_z;mag_n;mag_e;mag_d;mag_bias_x;mag_bias_y;mag_bias_z];
+state_vector = [q1;q2;q3;q4;v_n;v_e;v_d;p_n;p_e;p_d;omega_bias_x;omega_bias_y;omega_bias_z;acc_bias_x;acc_bias_y;acc_bias_z;mag_n;mag_e;mag_d;mag_bias_x;mag_bias_y;mag_bias_z;baro_bias];
 nstate = numel(state_vector);
 
-syms da_x da_y da_z 'real' %delta angle measurement in XYZ - rad
-syms dv_x dv_y dv_z 'real' %delta velocity measurement in XYZ - m/s^2
+syms omega_x omega_y omega_z 'real' %omega measurement in XYZ - rad/s
+syms acc_x acc_y acc_z 'real' %acc measurement in XYZ - m/s^2
 syms da_prev_x da_prev_y da_prev_z 'real' %previous delta angle - rad
 syms dv_prev_x dv_prev_y dv_prev_z 'real' %previous delta velocity - m/s
-syms da_noise_x da_noise_y da_noise_z 'real' %delta angle noise - rad
-syms dv_noise_x dv_noise_y dv_noise_z 'real' %delta velocity noise - m/s
+syms omega_noise_x omega_noise_y omega_noise_z 'real' %omega noise - rad/s
+syms acc_noise_x acc_noise_y acc_noise_z 'real' %acc noise - m/s^2
 syms mag_noise_n mag_noise_e mag_noise_d 'real' %mag noise - milligauss
-syms da_bias_noise_x da_bias_noise_y da_bias_noise_z 'real' %delta angle bias noise - rad
-syms dv_bias_noise_x dv_bias_noise_y dv_bias_noise_z 'real' %delta angle bias noise - m/s
+syms omega_bias_noise_x omega_bias_noise_y omega_bias_noise_z 'real' %omega bias noise - rad/s
+syms acc_bias_noise_x acc_bias_noise_y acc_bias_noise_z 'real' %acc bias noise - m/s^2
 syms mag_bias_noise_x mag_bias_noise_y mag_bias_noise_z 'real' %mag bias noise - milligauss
+syms baro_bias_noise %baro bias noise - m
 syms dt 'real' %measurement time step - s
 syms g_n g_e g_d 'real' %NED gravity - m/s^2
-syms da_cov_x da_cov_y da_cov_z dv_cov_x dv_cov_y dv_cov_z 'real'; %delta angle and delta velocity measurement variances
-syms da_bias_cov_x da_bias_cov_y da_bias_cov_z dv_bias_cov_x dv_bias_cov_y dv_bias_cov_z 'real'; %delta angle and delta velocity measurement variances
+syms omega_cov_x omega_cov_y omega_cov_z acc_cov_x acc_cov_y acc_cov_z 'real'; %omega and acc measurement variances
+syms omega_bias_cov_x omega_bias_cov_y omega_bias_cov_z acc_bias_cov_x acc_bias_cov_y acc_bias_cov_z 'real'; %omega and acc measurement variances
 syms mag_noise_cov_n mag_noise_cov_e mag_noise_cov_d 'real' %mag noise variances- milligauss^2
 syms mag_bias_noise_cov_x mag_bias_noise_cov_y mag_bias_noise_cov_z 'real' %mag bias noise variances - milligauss^2
+syms baro_bias_noise_cov %variance for baro - m^2
 syms rv_n rv_e rv_d 'real' %variances for NED velocity measurements - (m/s)^2
 syms rp_n rp_e rp_d 'real' %variances for NED position measurements - m^2
 syms rmag_x rmag_y rmag_z 'real' %variance for magnetic flux measurements - milligauss^2
 syms rdec 'real' %variance for magnetic declination measurements - rad^2
 syms ryaw 'real' %variance for yaw measurements - rad^2
-syms rgpsv 'real' %variances for GPS NED velocity measurements - (m/s)^2
-syms rgpsp 'real' %variances for GPS NED position measurements - m^2
+syms rbaro 'real' %variance for baro measurements - m^2
 
-da_bias = [da_bias_x;da_bias_y;da_bias_z];
-dv_bias = [dv_bias_x;dv_bias_y;dv_bias_z];
+omega_bias_new = [omega_bias_x;omega_bias_y;omega_bias_z] + [omega_bias_noise_x;omega_bias_noise_y;omega_bias_noise_z];
+acc_bias_new = [acc_bias_x;acc_bias_y;acc_bias_z] + [acc_bias_noise_x;acc_bias_noise_y;acc_bias_noise_z];
 
-da_noise = [da_noise_x;da_noise_y;da_noise_z];
-dv_noise = [dv_noise_x;dv_noise_y;dv_noise_z];
+da_bias = omega_bias_new*dt;
+dv_bias = acc_bias_new*dt;
+
+da_noise = [omega_noise_x;omega_noise_y;omega_noise_z]*dt;
+dv_noise = [acc_noise_x;acc_noise_y;acc_noise_z]*dt;
 mag_noise = [mag_noise_n;mag_noise_e;mag_noise_d];
-da_bias_noise = [da_bias_noise_x;da_bias_noise_y;da_bias_noise_z];
-dv_bias_noise = [dv_bias_noise_x;dv_bias_noise_y;dv_bias_noise_z];
 mag_bias_noise = [mag_bias_noise_x;mag_bias_noise_y;mag_bias_noise_z];
 
-da_measurement = [da_x;da_y;da_z];
-dv_measurement = [dv_x;dv_y;dv_z];
+da_measurement = [omega_x;omega_y;omega_z]*dt;
+dv_measurement = [acc_x;acc_y;acc_z]*dt;
 
 da_prev = [da_prev_x;da_prev_y;da_prev_z];
 dv_prev = [dv_prev_x;dv_prev_y;dv_prev_z];
 
 tbn = Quat_to_Tbn([q1,q2,q3,q4]);
 
-%Ignore coning compensation and earths rotation as these effect are
-%negligible in terms of covariance growth compared to other efects for our
-%grade of sensor
-%deltaA = da - da_b + 1/12*cross(da_prev,da) - transpose(Cbn)*([omn; ome; omd])*dt;
 real_da = da_measurement - da_bias - da_noise + (1/12)*cross(da_prev,da_measurement - da_bias - da_noise);
 
-%define the bias corrected delta v
-%Ignore sculling as this effect is negligible in terms of covariance growth 
-%compared to other effects for our grade of sensor
-%deltaVelocity = dv - dv_b + 0.5*cross(da,dv) + 1/12*(cross(da_prev,dv) + cross(dv_prev,da));
-%rotation correction
 real_dv = dv_measurement - dv_bias - dv_noise + 0.5*cross(real_da,dv_measurement - dv_bias - dv_noise) + (1/12)*(cross(da_prev,dv_measurement - dv_bias - dv_noise) + cross(dv_prev,real_da));
 
 quat = [q1;q2;q3;q4];
 
-%define the attitude update equations
-%use a first order expansion of rotation to calculate the quaternion increment
-%acceptable for propagation of covariances
 dquat = [1;
     0.5*real_da(1);
     0.5*real_da(2);
@@ -80,14 +73,9 @@ dquat = [1;
     ];
 quat_new = QuatMult(quat,dquat);
 
-%define the velocity update equations
-%vNew = [vn;ve;vd] + [gn;ge;gd]*dt + Tbn*deltaVelocity - cross(2*[omn; ome; omd],[vn;ve;vd])*dt;
 v_new = [v_n;v_e;v_d] + [g_n;g_e;g_d]*dt + tbn*real_dv;
 
 p_new = [p_n;p_e;p_d] + [v_n;v_e;v_d]*dt + 0.5*real_dv*dt;
-
-da_bias_new = [da_bias_x;da_bias_y;da_bias_z] + da_bias_noise;
-dv_bias_new = [dv_bias_x;dv_bias_y;dv_bias_z] + dv_bias_noise;
 
 mag_n_new = mag_n + mag_noise_n;
 mag_e_new = mag_e + mag_noise_e;
@@ -97,32 +85,27 @@ mag_bias_x_new = mag_bias_x + mag_bias_noise_x;
 mag_bias_y_new = mag_bias_y + mag_bias_noise_y;
 mag_bias_z_new = mag_bias_z + mag_bias_noise_z;
 
-process_equation = [quat_new;v_new;p_new;da_bias_new;dv_bias_new;mag_n_new;mag_e_new;mag_d_new;mag_bias_x_new;mag_bias_y_new;mag_bias_z_new];
+baro_bias_new = baro_bias + baro_bias_noise;
+
+process_equation = [quat_new;v_new;p_new;omega_bias_new;acc_bias_new;mag_n_new;mag_e_new;mag_d_new;mag_bias_x_new;mag_bias_y_new;mag_bias_z_new;baro_bias_new];
 
 %%generate equations
 
 %derive the state transition matrix
 F = jacobian(process_equation,state_vector);
-F = subs(F,{da_noise_x,da_noise_y,da_noise_z,dv_noise_x,dv_noise_y,dv_noise_z,mag_noise_n,mag_noise_e,mag_noise_d,da_bias_noise_x,da_bias_noise_y,da_bias_noise_z,dv_bias_noise_x,dv_bias_noise_y,dv_bias_noise_z,mag_bias_noise_x,mag_bias_noise_y,mag_bias_noise_z},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
+F = subs(F,{omega_noise_x,omega_noise_y,omega_noise_z,acc_noise_x,acc_noise_y,acc_noise_z,mag_noise_n,mag_noise_e,mag_noise_d,omega_bias_noise_x,omega_bias_noise_y,omega_bias_noise_z,acc_bias_noise_x,acc_bias_noise_y,acc_bias_noise_z,mag_bias_noise_x,mag_bias_noise_y,mag_bias_noise_z,baro_bias_noise},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
 [F,OF] = OptimiseAlgebra(F,'OF');
 
-%Define the control (disturbance) vector. Error growth in the inertial
-%solution is assumed to be driven by 'noise' in the delta angles and
-%velocities, after bias effects have been removed. This is OK becasue we
-%have sensor bias accounted for in the state equations.
-dist_vector = [da_noise;dv_noise;da_bias_noise;dv_bias_noise;mag_noise;mag_bias_noise];
+%define the control (disturbance) vector
+dist_vector = [omega_noise_x;omega_noise_y;omega_noise_z;acc_noise_x;acc_noise_y;acc_noise_z;omega_bias_noise_x;omega_bias_noise_y;omega_bias_noise_z;acc_bias_noise_x;acc_bias_noise_y;acc_bias_noise_z;mag_noise_n;mag_noise_e;mag_noise_d;mag_bias_noise_x;mag_bias_noise_y;mag_bias_noise_z;baro_bias_noise];
 
 %derive the control(disturbance) influence matrix
 G = jacobian(process_equation,dist_vector);
-G = subs(G,{da_noise_x,da_noise_y,da_noise_z,dv_noise_x,dv_noise_y,dv_noise_z,mag_noise_n,mag_noise_e,mag_noise_d,da_bias_noise_x,da_bias_noise_y,da_bias_noise_z,dv_bias_noise_x,dv_bias_noise_y,dv_bias_noise_z,mag_bias_noise_x,mag_bias_noise_y,mag_bias_noise_z},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
+G = subs(G,{omega_noise_x,omega_noise_y,omega_noise_z,acc_noise_x,acc_noise_y,acc_noise_z,mag_noise_n,mag_noise_e,mag_noise_d,omega_bias_noise_x,omega_bias_noise_y,omega_bias_noise_z,acc_bias_noise_x,acc_bias_noise_y,acc_bias_noise_z,mag_bias_noise_x,mag_bias_noise_y,mag_bias_noise_z,baro_bias_noise},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
 [G,OG] = OptimiseAlgebra(G,'OG');
 
 %derive the state error matrix
-%Note - this derivation of the covariance update equations does not include
-%any general state noise - this will be added at the implementation stage
-%by adding an approriately scaled diagonal process noise matrix to the 
-%covariance matrix
-noise = diag([da_cov_x da_cov_y da_cov_z dv_cov_x dv_cov_y dv_cov_z  da_bias_cov_x da_bias_cov_y da_bias_cov_z dv_bias_cov_x dv_bias_cov_y dv_bias_cov_z mag_noise_cov_n mag_noise_cov_e mag_noise_cov_d mag_bias_noise_cov_x mag_bias_noise_cov_y mag_bias_noise_cov_z]);
+noise = diag([omega_cov_x omega_cov_y omega_cov_z acc_cov_x acc_cov_y acc_cov_z  omega_bias_cov_x omega_bias_cov_y omega_bias_cov_z acc_bias_cov_x acc_bias_cov_y acc_bias_cov_z mag_noise_cov_n mag_noise_cov_e mag_noise_cov_d mag_bias_noise_cov_x mag_bias_noise_cov_y mag_bias_noise_cov_z baro_bias_noise_cov]);
 Q = G*noise*transpose(G);
 [Q,OQ] = OptimiseAlgebra(Q,'OQ');
 
@@ -161,9 +144,7 @@ K_PE = (P*transpose(H_PE))/(H_PE*P*transpose(H_PE) + rp_e);
 H_PD = jacobian(p_d,state_vector);
 K_PD = (P*transpose(H_PD))/(H_PD*P*transpose(H_PD) + rp_d);
 
-%combine into a single H and K matrix (note these matrices cannot be used
-%for a single step fusion, so each row|column mst be used in a separate
-%fusion step
+%combine into a single H and K matrix
 H_VP  = [H_VN;H_VE;H_VD;H_PN;H_PE;H_PD];
 clear    H_VN H_VE H_VD H_PN H_PE H_PD;
 K_VP = [K_VN,K_VE,K_VD,K_PN,K_PE,K_PD];
@@ -203,8 +184,16 @@ H_YAW312 = simplify(H_YAW312);
 K_YAW312 = (P*transpose(H_YAW312))/(H_YAW312*P*transpose(H_YAW312) + ryaw);
 K_YAW312 = simplify(K_YAW312);
 
+%%derive equations for fusion of baro
+baro_measurement = baro_bias - p_d;
+H_BARO = jacobian(baro_measurement,state_vector);
+K_BARO = (P*transpose(H_BARO))/(H_BARO*P*transpose(H_BARO) + rbaro);
+[K_BARO,OK_BARO] = OptimiseAlgebra(K_BARO,'OK_BARO');
+
 file_name = 'ScriptOutput.mat';
 save(file_name);
 
 OutputFormater(nstate);
 ConvertCode();
+
+disp('Derivation complete');
