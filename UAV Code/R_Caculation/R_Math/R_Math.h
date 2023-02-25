@@ -3,6 +3,11 @@
 #ifndef R_MATH_H
 #define R_MATH_H
 
+#include "R_Eulerangle.h"
+#include "R_Matrix.h"
+#include "R_Quaternion.h"
+#include "R_Vector.h"
+
 template<typename T> inline T add(T input1, T input2) {return input1 + input2;}
 template<typename T> inline T sub(T input1, T input2) {return input1 - input2;}
 template<typename T> inline T mul(T input1, T input2) {return input1 * input2;}
