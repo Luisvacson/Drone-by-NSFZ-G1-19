@@ -5,45 +5,40 @@
 
 #include "R_Math.h"
 
-namespace R_MATRIX
+template<typename T,int M,int N>class R_Matrix
 {
-    template<typename T,int M,int N>class r_matrix
-    {
-        public:
-            T content[M][N];
+    public:
+        T content[M][N];
+        inline R_Matrix(const T input[M][N]);
+        ~R_Matrix();
+        inline void operator=(R_Matrix<T,M,N> input);
+        R_Matrix<T,M,N> operator+(R_Matrix<T,M,N> input);
+        R_Matrix<T,M,N> operator-(R_Matrix<T,M,N> input);
+        void operator+=(R_Matrix<T,M,N> input);
+        void operator-=(R_Matrix<T,M,N> input);
+        template<int K> R_Matrix<T,M,K> operator*(R_Matrix<T,N,K> input);
+        constexpr R_Matrix<T,M,N> num_prod(T input);
+        constexpr void scale(T input);
+        R_Matrix<T,N,M> transpose();
+        inline bool is_zero();
+};
 
-            inline r_matrix(const T input[M][N]);
-            ~r_matrix();
-            inline void operator=(r_matrix<T,M,N> input);
-            r_matrix<T,M,N> operator+(r_matrix<T,M,N> input);
-            r_matrix<T,M,N> operator-(r_matrix<T,M,N> input);
-            void operator+=(r_matrix<T,M,N> input);
-            void operator-=(r_matrix<T,M,N> input);
-            template<int K> r_matrix<T,M,K> operator*(r_matrix<T,N,K> input);
-            constexpr r_matrix<T,M,N> num_prod(T input);
-            constexpr void scale(T input);
-            r_matrix<T,N,M> transpose();
-            inline bool is_zero();
-    };
-
-    class r_matrix3d
-    {
-        public:
-            R_Float content[3][3];
-
-            inline r_matrix3d(const R_Float input[3][3]);
-            ~r_matrix3d();
-            inline void operator=(r_matrix3d input);
-            r_matrix3d operator+(r_matrix3d input);
-            r_matrix3d operator-(r_matrix3d input);
-            void operator+=(r_matrix3d input);
-            void operator-=(r_matrix3d input);
-            template<int K> r_matrix<R_Float,3,K> operator*(r_matrix<R_Float,3,K> input);
-            constexpr r_matrix3d num_prod(R_Float input);
-            constexpr void scale(R_Float input);
-            r_matrix3d transpose();
-            inline bool is_zero();
-    };
+class R_Matrix3d
+{
+    public:
+        R_Float content[3][3];
+        inline R_Matrix3d(const R_Float input[3][3]);
+        ~R_Matrix3d();
+        inline void operator=(R_Matrix3d input);
+        R_Matrix3d operator+(R_Matrix3d input);
+        R_Matrix3d operator-(R_Matrix3d input);
+        void operator+=(R_Matrix3d input);
+        void operator-=(R_Matrix3d input);
+        template<int K> R_Matrix<R_Float,3,K> operator*(R_Matrix<R_Float,3,K> input);
+        constexpr R_Matrix3d num_prod(R_Float input);
+        constexpr void scale(R_Float input);
+        R_Matrix3d transpose();
+        inline bool is_zero();
 };
 
 #endif

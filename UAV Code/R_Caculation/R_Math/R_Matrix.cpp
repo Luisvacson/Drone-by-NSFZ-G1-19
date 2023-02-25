@@ -2,111 +2,92 @@
 
 #include "R_Matrix.h"
 
-namespace R_MATRIX
+template<typename T,int M,int N>
+inline R_Matrix<T,M,N>::R_Matrix(const T input[M][N])
+{}
+template<typename T,int M,int N>
+R_Matrix<T,M,N>::~R_Matrix()
+{}
+template<typename T,int M,int N>
+inline void R_Matrix<T,M,N>::operator=(R_Matrix<T,M,N> input)
 {
-    template<typename T,int M,int N>
-    inline r_matrix<T,M,N>::r_matrix(const T input[M][N])
-    {}
-
-    template<typename T,int M,int N>
-    r_matrix<T,M,N>::~r_matrix()
-    {}
-
-    template<typename T,int M,int N>
-    inline void r_matrix<T,M,N>::operator=(r_matrix<T,M,N> input)
+    int i,j;
+    for(i=0;i<M;i++)
     {
-        int i,j;
-        for(i=0;i<M;i++)
+        for(j=0;j<N;j++)
         {
-            for(j=0;j<N;j++)
-            {
-                content[i][j]=input.content[i][j];
-            }
+            content[i][j]=input.content[i][j];
         }
     }
-    
-    template<typename T,int M,int N>
-    r_matrix<T,M,N> r_matrix<T,M,N>::operator+(r_matrix<T,M,N> input)
-    {}
-    
-    template<typename T,int M,int N>
-    r_matrix<T,M,N> r_matrix<T,M,N>::operator-(r_matrix<T,M,N> input)
-    {}
+}
 
-    template<typename T,int M,int N>
-    void r_matrix<T,M,N>::operator+=(r_matrix<T,M,N> input)
-    {}
+template<typename T,int M,int N>
+R_Matrix<T,M,N> R_Matrix<T,M,N>::operator+(R_Matrix<T,M,N> input)
+{}
 
-    template<typename T,int M,int N>
-    void r_matrix<T,M,N>::operator-=(r_matrix<T,M,N> input)
-    {}
-    
-    template<typename T,int M,int N>
-    template<int K> 
-    r_matrix<T,M,K> r_matrix<T,M,N>::operator*(r_matrix<T,N,K> input)
-    {}
-    
-    template<typename T,int M,int N>
-    constexpr r_matrix<T,M,N> r_matrix<T,M,N>::num_prod(T input)
-    {}
-    
-    template<typename T,int M,int N>
-    constexpr void r_matrix<T,M,N>::scale(T input)
-    {}
-    
-    template<typename T,int M,int N>
-    r_matrix<T,N,M> r_matrix<T,M,N>::transpose()
-    {}
-    
-    template<typename T,int M,int N>
-    inline bool r_matrix<T,M,N>::is_zero()
-    {}
-    
-    inline r_matrix3d::r_matrix3d(const R_Float input[3][3])
-    {}
+template<typename T,int M,int N>
+R_Matrix<T,M,N> R_Matrix<T,M,N>::operator-(R_Matrix<T,M,N> input)
+{}
+template<typename T,int M,int N>
+void R_Matrix<T,M,N>::operator+=(R_Matrix<T,M,N> input)
+{}
+template<typename T,int M,int N>
+void R_Matrix<T,M,N>::operator-=(R_Matrix<T,M,N> input)
+{}
 
-    r_matrix3d::~r_matrix3d()
-    {}
+template<typename T,int M,int N>
+template<int K> 
+R_Matrix<T,M,K> R_Matrix<T,M,N>::operator*(R_Matrix<T,N,K> input)
+{}
 
-    inline void r_matrix3d::operator=(r_matrix3d input)
-    {
-        content[0][0]=input.content[0][0];
-        content[0][1]=input.content[0][1];
-        content[0][2]=input.content[0][2];
-        content[1][0]=input.content[1][0];
-        content[1][1]=input.content[1][1];
-        content[1][2]=input.content[1][2];
-        content[2][0]=input.content[2][0];
-        content[2][1]=input.content[2][1];
-        content[2][2]=input.content[2][2];
-    }
+template<typename T,int M,int N>
+constexpr R_Matrix<T,M,N> R_Matrix<T,M,N>::num_prod(T input)
+{}
 
-    r_matrix3d r_matrix3d::operator+(r_matrix3d input)
-    {}
+template<typename T,int M,int N>
+constexpr void R_Matrix<T,M,N>::scale(T input)
+{}
 
-    r_matrix3d r_matrix3d::operator-(r_matrix3d input)
-    {}
+template<typename T,int M,int N>
+R_Matrix<T,N,M> R_Matrix<T,M,N>::transpose()
+{}
 
-    void r_matrix3d::operator+=(r_matrix3d input)
-    {}
+template<typename T,int M,int N>
+inline bool R_Matrix<T,M,N>::is_zero()
+{}
 
-    void r_matrix3d::operator-=(r_matrix3d input)
-    {}
-
-    template<int K> 
-    r_matrix<R_Float,3,K> r_matrix3d::operator*(r_matrix<R_Float,3,K> input)
-    {}
-
-    constexpr r_matrix3d r_matrix3d::num_prod(R_Float input)
-    {}
-
-    constexpr void r_matrix3d::scale(R_Float input)
-    {}
-
-    r_matrix3d r_matrix3d::transpose()
-    {}
-
-    inline bool r_matrix3d::is_zero()
-    {}
-
-};
+inline R_Matrix3d::R_Matrix3d(const R_Float input[3][3])
+{}
+R_Matrix3d::~R_Matrix3d()
+{}
+inline void R_Matrix3d::operator=(R_Matrix3d input)
+{
+    content[0][0]=input.content[0][0];
+    content[0][1]=input.content[0][1];
+    content[0][2]=input.content[0][2];
+    content[1][0]=input.content[1][0];
+    content[1][1]=input.content[1][1];
+    content[1][2]=input.content[1][2];
+    content[2][0]=input.content[2][0];
+    content[2][1]=input.content[2][1];
+    content[2][2]=input.content[2][2];
+}
+R_Matrix3d R_Matrix3d::operator+(R_Matrix3d input)
+{}
+R_Matrix3d R_Matrix3d::operator-(R_Matrix3d input)
+{}
+void R_Matrix3d::operator+=(R_Matrix3d input)
+{}
+void R_Matrix3d::operator-=(R_Matrix3d input)
+{}
+template<int K> 
+R_Matrix<R_Float,3,K> R_Matrix3d::operator*(R_Matrix<R_Float,3,K> input)
+{}
+constexpr R_Matrix3d R_Matrix3d::num_prod(R_Float input)
+{}
+constexpr void R_Matrix3d::scale(R_Float input)
+{}
+R_Matrix3d R_Matrix3d::transpose()
+{}
+inline bool R_Matrix3d::is_zero()
+{}

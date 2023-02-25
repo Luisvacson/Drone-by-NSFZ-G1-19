@@ -5,15 +5,15 @@ disp('Derivation start');
 %%state vector
 
 syms q1 q2 q3 q4 'real' %state quaternion
-syms v_n v_e v_d 'real' %velocity in NED
-syms p_n p_e p_d 'real' %position in NED
+syms velocity_n velocity_e velocity_d 'real' %velocity in NED
+syms postion_n postion_e postion_d 'real' %position in NED
 syms omega_bias_x omega_bias_y omega_bias_z 'real' %omega bias in XYZ - rad/s
 syms acc_bias_x acc_bias_y acc_bias_z 'real' %acc bias in XYZ - m/s^2
 syms mag_n mag_e mag_d 'real' %earth magnetic field in NED - milligauss
 syms mag_bias_x mag_bias_y mag_bias_z 'real' %body magnetic field in xyz - milligauss
 syms baro_bias 'real'%baro bias - m
 
-state_vector = [q1;q2;q3;q4;v_n;v_e;v_d;p_n;p_e;p_d;omega_bias_x;omega_bias_y;omega_bias_z;acc_bias_x;acc_bias_y;acc_bias_z;mag_n;mag_e;mag_d;mag_bias_x;mag_bias_y;mag_bias_z;baro_bias];
+state_vector = [q1;q2;q3;q4;velocity_n;velocity_e;velocity_d;postion_n;postion_e;postion_d;omega_bias_x;omega_bias_y;omega_bias_z;acc_bias_x;acc_bias_y;acc_bias_z;mag_n;mag_e;mag_d;mag_bias_x;mag_bias_y;mag_bias_z;baro_bias];
 nstate = numel(state_vector);
 
 syms omega_x omega_y omega_z 'real' %omega measurement in XYZ - rad/s
@@ -73,9 +73,9 @@ dquat = [1;
     ];
 quat_new = QuatMult(quat,dquat);
 
-v_new = [v_n;v_e;v_d] + [g_n;g_e;g_d]*dt + tbn*real_dv;
+v_new = [velocity_n;velocity_e;velocity_d] + [g_n;g_e;g_d]*dt + tbn*real_dv;
 
-p_new = [p_n;p_e;p_d] + [v_n;v_e;v_d]*dt + 0.5*real_dv*dt;
+p_new = [postion_n;postion_e;postion_d] + [velocity_n;velocity_e;velocity_d]*dt + 0.5*real_dv*dt;
 
 mag_n_new = mag_n + mag_noise_n;
 mag_e_new = mag_e + mag_noise_e;
@@ -126,22 +126,22 @@ PP = F*P*transpose(F) + Q;
 
 %%derive equations for sequential fusion of velocity and position measurements
 
-H_VN = jacobian(v_n,state_vector);
+H_VN = jacobian(velocity_n,state_vector);
 K_VN = (P*transpose(H_VN))/(H_VN*P*transpose(H_VN) + rv_n);
 
-H_VE = jacobian(v_e,state_vector);
+H_VE = jacobian(velocity_e,state_vector);
 K_VE = (P*transpose(H_VE))/(H_VE*P*transpose(H_VE) + rv_e);
 
-H_VD = jacobian(v_d,state_vector);
+H_VD = jacobian(velocity_d,state_vector);
 K_VD = (P*transpose(H_VD))/(H_VD*P*transpose(H_VD) + rv_d);
 
-H_PN = jacobian(p_n,state_vector);
+H_PN = jacobian(postion_n,state_vector);
 K_PN = (P*transpose(H_PN))/(H_PN*P*transpose(H_PN) + rp_n);
 
-H_PE = jacobian(p_e,state_vector);
+H_PE = jacobian(postion_e,state_vector);
 K_PE = (P*transpose(H_PE))/(H_PE*P*transpose(H_PE) + rp_e);
 
-H_PD = jacobian(p_d,state_vector);
+H_PD = jacobian(postion_d,state_vector);
 K_PD = (P*transpose(H_PD))/(H_PD*P*transpose(H_PD) + rp_d);
 
 %combine into a single H and K matrix
@@ -185,7 +185,7 @@ K_YAW312 = (P*transpose(H_YAW312))/(H_YAW312*P*transpose(H_YAW312) + ryaw);
 K_YAW312 = simplify(K_YAW312);
 
 %%derive equations for fusion of baro
-baro_measurement = baro_bias - p_d;
+baro_measurement = baro_bias - postion_d;
 H_BARO = jacobian(baro_measurement,state_vector);
 K_BARO = (P*transpose(H_BARO))/(H_BARO*P*transpose(H_BARO) + rbaro);
 [K_BARO,OK_BARO] = OptimiseAlgebra(K_BARO,'OK_BARO');
