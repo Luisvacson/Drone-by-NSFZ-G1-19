@@ -49,4 +49,7 @@ struct R_EKF_State_Output
     R_Vector3d position;
 };
 
+struct R_Sensor_State
+{};
+
 #endif
