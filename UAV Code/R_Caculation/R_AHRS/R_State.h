@@ -42,4 +42,11 @@ struct R_EKF_State_Unpacked
     R_Float baro_bias;
 };
 
+struct R_EKF_State_Output
+{
+    R_Eulerangle attitude;
+    R_Vector3d velocity;
+    R_Vector3d position;
+};
+
 #endif
