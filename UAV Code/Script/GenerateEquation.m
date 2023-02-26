@@ -55,8 +55,6 @@ dv_bias = acc_bias_new*dt;
 
 da_noise = [omega_noise_x;omega_noise_y;omega_noise_z]*dt;
 dv_noise = [acc_noise_x;acc_noise_y;acc_noise_z]*dt;
-mag_noise = [mag_noise_n;mag_noise_e;mag_noise_d];
-mag_bias_noise = [mag_bias_noise_x;mag_bias_noise_y;mag_bias_noise_z];
 
 da_measurement = [omega_x;omega_y;omega_z]*dt;
 dv_measurement = [acc_x;acc_y;acc_z]*dt;
@@ -83,15 +81,15 @@ v_new = [velocity_n;velocity_e;velocity_d] + [g_n;g_e;g_d]*dt + tbn*real_dv;
 
 p_new = [postion_n;postion_e;postion_d] + [velocity_n;velocity_e;velocity_d]*dt + 0.5*real_dv*dt;
 
-mag_n_new = mag_n + mag_noise_n;
-mag_e_new = mag_e + mag_noise_e;
-mag_d_new = mag_d + mag_noise_d;
+mag_n_new = mag_n + mag_noise_n*dt;
+mag_e_new = mag_e + mag_noise_e*dt;
+mag_d_new = mag_d + mag_noise_d*dt;
 
-mag_bias_x_new = mag_bias_x + mag_bias_noise_x;
-mag_bias_y_new = mag_bias_y + mag_bias_noise_y;
-mag_bias_z_new = mag_bias_z + mag_bias_noise_z;
+mag_bias_x_new = mag_bias_x + mag_bias_noise_x*dt;
+mag_bias_y_new = mag_bias_y + mag_bias_noise_y*dt;
+mag_bias_z_new = mag_bias_z + mag_bias_noise_z*dt;
 
-baro_bias_new = baro_bias + baro_bias_noise;
+baro_bias_new = baro_bias + baro_bias_noise*dt;
 
 process_equation = [quat_new;v_new;p_new;omega_bias_new;acc_bias_new;mag_n_new;mag_e_new;mag_d_new;mag_bias_x_new;mag_bias_y_new;mag_bias_z_new;baro_bias_new];
 
