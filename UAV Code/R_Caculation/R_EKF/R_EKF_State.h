@@ -1,5 +1,5 @@
-#ifndef R_STATE_H
-#define R_STATE_H
+#ifndef R_EKF_STATE_H
+#define R_EKF_STATE_H
 
 #include "R_Math.h"
 
