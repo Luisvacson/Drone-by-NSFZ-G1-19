@@ -80,7 +80,6 @@ template<typename T>class R_Number
         inline bool operator==(T input){return content==input;}
         inline void operator=(R_Number<T> input){content=input.content;}
         inline void operator=(T input){content=input;}
-        inline operator float(){return (float)content;}
 };
 
 typedef class R_Number<float> R_Float;
